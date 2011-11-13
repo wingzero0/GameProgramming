@@ -9,6 +9,7 @@ Created : 0303, 2004, C. Wang
 Last Updated : 1010, 2004, C.Wang
 ===============================================================*/
 #include "TheFlyWin32.h"
+#include "KeyboardControl.h"
 
 int oldX, oldY, oldXM, oldYM, oldXMM, oldYMM;
 
@@ -20,12 +21,15 @@ OBJECTid tID;
 ACTORid lyubu;
 
 char debug[1024] = "\0";
-void debug_message(char*);
+char loopBuff[1024] = "\0";
+void debug_message(char*, char*);
 
 void QuitGame(WORLDid, BYTE, BOOL);
 BOOL initLyubu();
+void Reset(WORLDid gID, BYTE code, BOOL value);
 void PlayAction(int skip);
 void GameAI(int);
+void GetPosDetail(char *);
 
 void InitPivot(WORLDid, int, int);
 void PivotCam(WORLDid, int, int);
@@ -87,13 +91,13 @@ void main(int argc, char **argv)
 		//exit(-1);
 	}
 	
-	initLyubu();
-
 	// translate the camera
 	FnCamera camera;
 	camera.Object(cID);
 	camera.Rotate(X_AXIS, 90.0f, LOCAL);
 	camera.Translate(0.0f, 10.0f, 100.0f, LOCAL);
+	
+	initLyubu();
 
 	// translate the light
 	FnLight light;
@@ -103,6 +107,7 @@ void main(int argc, char **argv)
 
 	// set Hotkeys
 	FyDefineHotKey(FY_ESCAPE, QuitGame, FALSE);
+	FyDefineHotKey(FY_F1, Reset, FALSE);
 
 	// define some mouse functions
 	FyBindMouseFunction(LEFT_MOUSE, InitPivot, PivotCam, NULL, NULL);
@@ -112,11 +117,14 @@ void main(int argc, char **argv)
 	/* bind a timer, frame rate = 30 fps */
 	FyBindTimer(0, 30.0f, GameAI, TRUE);
 
+	//test keyboard control obj
+	KeyboardControl *kc = new KeyboardControl(lyubu, cID);
+
 	// invoke the system
 	FyInvokeTheFly(TRUE);
 }
 
-BOOL initLyubu(){
+BOOL initLyubu(){ // init Lyubu and Camera
 	FnWorld gw;
 	// create actor:lyubu
 	gw.Object(gID);
@@ -165,9 +173,42 @@ BOOL initLyubu(){
 	if (actor.Play(0,START, 0.0, FALSE,TRUE) == FALSE){
 		sprintf(debug, "%s play action failed\n", debug);
 	}
+
+	FnCamera camera;
+	camera.Object(cID);
+	pos[0] = 3569.0;
+	pos[1] = -3570;
+	pos[2] = 115.0;
+	camera.SetWorldPosition(pos);
+
+	float fDir[3];
+	float uDir[3];
+	fDir[0] = 0.0;
+	fDir[1] = 1.0;
+	fDir[2] = -0.2;
+	uDir[0] = 0.0;
+	uDir[1] = 0.2;
+	uDir[2] = 1.0;
+	
+	actor.SetWorldDirection(fDir,uDir);
+	camera.SetWorldDirection(fDir,uDir);
+	sprintf(debug, "%sface:%f %f %f\n", debug,fDir[0],fDir[1],fDir[2]);
+	sprintf(debug, "%sup:%f %f %f\n", debug, uDir[0],uDir[1],uDir[2]);
 	return TRUE;
 }
 
+void Reset(WORLDid gID, BYTE code, BOOL value){
+	if (code == FY_F1) {
+		if (value) {
+			FnScene scene;
+			scene.Object(sID);
+			scene.DeleteActor(lyubu);
+			debug[0] = '\0';
+			initLyubu();
+		}
+	}
+	
+}
 void PlayAction(int skip){
 	FnActor actor;
 	actor.Object(lyubu);
@@ -177,6 +218,20 @@ void PlayAction(int skip){
 	}else{
 		//sprintf(debug, "%s played\n", debug);
 	}
+}
+
+void GetPosDetail(char *buffer){
+	FnCamera camera;
+	camera.Object(cID);
+	float fDir[3];
+	float uDir[3];
+	float pos[3];
+	camera.GetWorldPosition(pos);
+	camera.GetWorldDirection(fDir, uDir);
+	sprintf(buffer, "carmer pos[0] = %f,pos[1] = %f,pos[2] = %f \n", pos[0],pos[1],pos[2]);
+	sprintf(buffer, "%scarmer fDir[0] = %f,fDir[1] = %f,fDir[2] = %f \n", buffer, fDir[0],fDir[1],fDir[2]);
+	sprintf(buffer, "%scarmer uDir[0] = %f,uDir[1] = %f,uDir[2] = %f \n", buffer, fDir[0],fDir[1],fDir[2]);
+	
 }
 //------------------------------------------------------------------------------------
 // timer callback function which will be invoked by TheFly3D System every 1/30 second
@@ -191,8 +246,8 @@ void GameAI(int skip)
 	vp.Object(vID);
 	vp.Render(cID, TRUE, TRUE);
 	PlayAction(skip);
-	debug_message(debug);
-	//debug[0] = '\0';
+	GetPosDetail(loopBuff);
+	debug_message(debug,loopBuff);
 	FnWorld gw;
 	gw.Object(gID);
 	gw.SwapBuffers();
@@ -309,10 +364,11 @@ void ZoomCam(WORLDid g, int x, int y)
 	}
 }
 
-void debug_message(char *string){
+void debug_message(char *string, char *string2){
 	FnWorld gw;
 	gw.Object(gID);
 	gw.StartMessageDisplay();
+	gw.MessageOnScreen(20,20,string2,255,0,0);
 	gw.MessageOnScreen(20,200,string,255,0,0);
 	gw.FinishMessageDisplay();
 }
