@@ -3,7 +3,8 @@
 
 class GameControl
 {
-protected:
+//protected:
+public:
 	ACTORid mainChar;
 	OBJECTid camera;
 	float dir[3];
@@ -14,5 +15,6 @@ public:
 	BOOL CharacterMove();
 	int TurnToTargetDir(float degree = 5.0);
 	BOOL isOnTargetDir();
+	int GenerateTargetDir();
 };
 

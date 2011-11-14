@@ -19,6 +19,7 @@ SCENEid sID;
 OBJECTid nID, cID, lID;
 OBJECTid tID;
 ACTORid lyubu;
+KeyboardControl *kc;
 
 char debug[1024] = "\0";
 char loopBuff[1024] = "\0";
@@ -29,7 +30,10 @@ BOOL initLyubu();
 void Reset(WORLDid gID, BYTE code, BOOL value);
 void PlayAction(int skip);
 void GameAI(int);
+void Render(int);
 void GetPosDetail(char *);
+BOOL BlindKeys();
+void KeyboardCommand(WORLDid gID, BYTE code, BOOL value);
 
 void InitPivot(WORLDid, int, int);
 void PivotCam(WORLDid, int, int);
@@ -106,19 +110,11 @@ void main(int argc, char **argv)
 	light.Translate(-50.0f, -50.0f, 50.0f, GLOBAL);
 
 	// set Hotkeys
-	FyDefineHotKey(FY_ESCAPE, QuitGame, FALSE);
-	FyDefineHotKey(FY_F1, Reset, FALSE);
-
-	// define some mouse functions
-	FyBindMouseFunction(LEFT_MOUSE, InitPivot, PivotCam, NULL, NULL);
-	FyBindMouseFunction(MIDDLE_MOUSE, InitZoom, ZoomCam, NULL, NULL);
-	FyBindMouseFunction(RIGHT_MOUSE, InitMove, MoveCam, NULL, NULL);
-
+	BlindKeys();
+	
 	/* bind a timer, frame rate = 30 fps */
-	FyBindTimer(0, 30.0f, GameAI, TRUE);
-
-	//test keyboard control obj
-	KeyboardControl *kc = new KeyboardControl(lyubu, cID);
+	FyBindTimer(0, 30.0f, GameAI, TRUE);	
+	FyBindTimer(1, 30.0f, Render, TRUE);	
 
 	// invoke the system
 	FyInvokeTheFly(TRUE);
@@ -194,6 +190,10 @@ BOOL initLyubu(){ // init Lyubu and Camera
 	camera.SetWorldDirection(fDir,uDir);
 	sprintf(debug, "%sface:%f %f %f\n", debug,fDir[0],fDir[1],fDir[2]);
 	sprintf(debug, "%sup:%f %f %f\n", debug, uDir[0],uDir[1],uDir[2]);
+
+	kc = new KeyboardControl(lyubu, cID);
+	sprintf(debug, "%sactorID=%d cID=%d",debug, lyubu, cID);
+	
 	return TRUE;
 }
 
@@ -204,6 +204,7 @@ void Reset(WORLDid gID, BYTE code, BOOL value){
 			scene.Object(sID);
 			scene.DeleteActor(lyubu);
 			debug[0] = '\0';
+			delete kc;
 			initLyubu();
 		}
 	}
@@ -213,7 +214,7 @@ void PlayAction(int skip){
 	FnActor actor;
 	actor.Object(lyubu);
 	
-	if (actor.Play(0,LOOP, skip, FALSE,TRUE) == FALSE){
+	if (actor.Play(0,LOOP, (float)skip, FALSE,TRUE) == FALSE){
 		//sprintf(debug, "%s play action failed\n", debug);
 	}else{
 		//sprintf(debug, "%s played\n", debug);
@@ -233,14 +234,39 @@ void GetPosDetail(char *buffer){
 	sprintf(buffer, "%scarmer uDir[0] = %f,uDir[1] = %f,uDir[2] = %f \n", buffer, fDir[0],fDir[1],fDir[2]);
 	
 }
+
+BOOL BlindKeys(){
+	FyDefineHotKey(FY_ESCAPE, QuitGame, FALSE);
+	FyDefineHotKey(FY_F1, Reset, FALSE);
+
+	// define some mouse functions
+	FyBindMouseFunction(LEFT_MOUSE, InitPivot, PivotCam, NULL, NULL);
+	FyBindMouseFunction(MIDDLE_MOUSE, InitZoom, ZoomCam, NULL, NULL);
+	FyBindMouseFunction(RIGHT_MOUSE, InitMove, MoveCam, NULL, NULL);
+
+	//test keyboard control obj
+	//FyDefineHotKey(FY_W, KeyboardCommand, FALSE);
+	//FyDefineHotKey(FY_A, KeyboardCommand, FALSE);
+	//FyDefineHotKey(FY_S, KeyboardCommand, FALSE);
+	//FyDefineHotKey(FY_D, KeyboardCommand, FALSE);
+	return TRUE;
+}
+
+/*
+void KeyboardCommand(WORLDid gID, BYTE code, BOOL value){
+	kc->Command(gID,code,value);
+}
+*/
 //------------------------------------------------------------------------------------
 // timer callback function which will be invoked by TheFly3D System every 1/30 second
 // C.Wang 0308, 2004
 //------------------------------------------------------------------------------------
 void GameAI(int skip)
 {
-	//Play action
-	//PlayAction(skip);
+	kc->Command();
+}
+
+void Render(int skip){
 	// render the scene
 	FnViewport vp;
 	vp.Object(vID);
@@ -250,12 +276,8 @@ void GameAI(int skip)
 	debug_message(debug,loopBuff);
 	FnWorld gw;
 	gw.Object(gID);
-	gw.SwapBuffers();
-	
-	
+	gw.SwapBuffers();	
 }
-
-
 //-------------------
 // quit the demo
 // C.Wang 0304, 2004
@@ -265,6 +287,7 @@ void QuitGame(WORLDid gID, BYTE code, BOOL value)
 	if (code == FY_ESCAPE) {
 		if (value) {
 			FyWin32EndWorld(gID);
+			delete kc;
 		}
 	}
 }
