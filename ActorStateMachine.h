@@ -1,8 +1,11 @@
 #pragma once
 #include "TheFlyWin32.h"
 
-#define ACTORFREE 0
-#define ACTORSTAY 1
+#define STATEATTACK 0
+#define STATEBEATTACK 1
+#define STATEIDLE 2
+#define STATERUN 3
+
 typedef int ActorState;
 
 
@@ -19,5 +22,9 @@ public:
 public:
 	ActorStateMachine(void);
 	~ActorStateMachine(void);
+	ActorStateMachine(ACTORid character);
+	int ChangeStateAndAction();
+	int ChangeState(ActorState s);
+	BOOL CanBeControl();
 };
 

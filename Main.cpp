@@ -10,6 +10,7 @@ Last Updated : 1010, 2004, C.Wang
 ===============================================================*/
 #include "TheFlyWin32.h"
 #include "KeyboardControl.h"
+#include "ActorStateMachine.h"
 
 int oldX, oldY, oldXM, oldYM, oldXMM, oldYMM;
 
@@ -191,7 +192,9 @@ BOOL initLyubu(){ // init Lyubu and Camera
 	sprintf(debug, "%sface:%f %f %f\n", debug,fDir[0],fDir[1],fDir[2]);
 	sprintf(debug, "%sup:%f %f %f\n", debug, uDir[0],uDir[1],uDir[2]);
 
-	kc = new KeyboardControl(lyubu, cID);
+	//kc = new KeyboardControl(lyubu, cID);
+	ActorStateMachine * lyubuState = new ActorStateMachine(lyubu);
+	kc = new KeyboardControl(lyubuState, cID);
 	sprintf(debug, "%sactorID=%d cID=%d",debug, lyubu, cID);
 	
 	return TRUE;
@@ -204,6 +207,8 @@ void Reset(WORLDid gID, BYTE code, BOOL value){
 			scene.Object(sID);
 			scene.DeleteActor(lyubu);
 			debug[0] = '\0';
+			ActorStateMachine * lyubuState = kc->mainChar;
+			delete lyubuState;
 			delete kc;
 			initLyubu();
 		}
