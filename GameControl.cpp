@@ -1,5 +1,4 @@
-﻿#include "GameControl.h"
-
+#include "GameControl.h"
 #include <math.h>
 
 #define FLOAT_ERROR 0.001
