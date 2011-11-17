@@ -8,6 +8,7 @@ public:
 	~KeyboardControl(void);
 	//KeyboardControl(ACTORid character, OBJECTid camera);
 	KeyboardControl(ActorStateMachine * mainChar, OBJECTid camera);
+	virtual int DirControl();
 	int BlindMoveKey();// can't blind the function in the object method
 	int Command(WORLDid gID, BYTE code, BOOL value);
 	int Command();

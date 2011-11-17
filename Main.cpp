@@ -187,10 +187,13 @@ BOOL initLyubu(){ // init Lyubu and Camera
 	uDir[1] = 0.2;
 	uDir[2] = 1.0;
 	
-	actor.SetWorldDirection(fDir,uDir);
 	camera.SetWorldDirection(fDir,uDir);
 	sprintf(debug, "%sface:%f %f %f\n", debug,fDir[0],fDir[1],fDir[2]);
 	sprintf(debug, "%sup:%f %f %f\n", debug, uDir[0],uDir[1],uDir[2]);
+
+	fDir[2] = 0.0f;
+	uDir[1] = 0.0f;
+	actor.SetWorldDirection(fDir,uDir);
 
 	//kc = new KeyboardControl(lyubu, cID);
 	ActorStateMachine * lyubuState = new ActorStateMachine(lyubu);

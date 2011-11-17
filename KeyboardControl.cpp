@@ -19,18 +19,43 @@ KeyboardControl::KeyboardControl(ACTORid character, OBJECTid camera):GameControl
 
 }
 */
-int KeyboardControl::Command(){//the return value doesn't represent anything.
-	//if (this->mainChar->CanBeControl() == FALSE){
-		//return 0;
-	//}
+
+int KeyboardControl::DirControl(){
+	if (this->mainChar->CanBeControl() == FALSE){
+		return -1;
+	}
+
 	if (FyCheckHotKeyStatus(FY_W)){
+		this->GenerateTargetDir(MOVE_FORWARD);
+	}else if (FyCheckHotKeyStatus(FY_A)){
+		this->GenerateTargetDir(MOVE_LEFT);
+	}else if (FyCheckHotKeyStatus(FY_S)){
+		this->GenerateTargetDir(MOVE_BACK);
+	}else if (FyCheckHotKeyStatus(FY_D)){
+		this->GenerateTargetDir(MOVE_RIGHT);
+	}
+	
+	if (this->isOnTargetDir()){
+		//sprintf(debug ,"in move\n");
 		this->CharacterMoveForward();
+	}else{
+		int ret = this->TurnToTargetDir();
+		//sprintf(debug ,"in turning: ret=%d\n", ret);
+	}
+	
+	return 0;
+}
+int KeyboardControl::Command(){//the return value doesn't represent anything.
+	if (FyCheckHotKeyStatus(FY_W) || FyCheckHotKeyStatus(FY_A) 
+		|| FyCheckHotKeyStatus(FY_S) || FyCheckHotKeyStatus(FY_D)){
+		this->DirControl();
 	}else if(FyCheckHotKeyStatus(FY_J)) {
 		this->CharacterNormalAttack();
 	}else{
 		this->CharacterSetIdle();
 		sprintf(debug ,"in else condition\n");
 	}
+
 
 	return 0;
 }
