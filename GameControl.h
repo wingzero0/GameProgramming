@@ -29,6 +29,8 @@ public:
 	int TurnToTargetDir(float degree = 30.0f);
 	BOOL isOnTargetDir();
 	int GenerateTargetDir(DIRECTION_CODE code);
+	int Rotate(float theta, float vector[2]);
+	int CalcLeftRight(DIRECTION_CODE code);
 private:
 	int dir_normalize(float pos[3]);
 };
