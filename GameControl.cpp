@@ -2,7 +2,7 @@
 #include <math.h>
 
 #define FLOAT_ERROR 0.001
-#define MOVE_LENGTH 5.0
+#define MOVE_LENGTH 10.0
 extern char debug[1024];
 
 GameControl::GameControl(void)
