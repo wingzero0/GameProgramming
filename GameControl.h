@@ -23,7 +23,7 @@ public:
 	GameControl(ActorStateMachine * mainChar, OBJECTid camera);
 
 	virtual int DirControl() = 0;
-	BOOL CharacterMoveForward();
+	BOOL CharacterMoveForward(DIRECTION_CODE code);
 	BOOL CharacterNormalAttack();
 	BOOL CharacterSetIdle();
 	int TurnToTargetDir(float degree = 30.0f);
@@ -31,6 +31,8 @@ public:
 	int GenerateTargetDir(DIRECTION_CODE code);
 	int Rotate(float theta, float vector[2]);
 	int CalcLeftRight(DIRECTION_CODE code);
+	void CamFallow();
+	void CamBackOff();
 private:
 	int dir_normalize(float pos[3]);
 };

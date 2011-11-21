@@ -25,19 +25,23 @@ int KeyboardControl::DirControl(){
 		return -1;
 	}
 
+	int key;
+
 	if (FyCheckHotKeyStatus(FY_W)){
-		this->GenerateTargetDir(MOVE_FORWARD);
+		key = MOVE_FORWARD;
 	}else if (FyCheckHotKeyStatus(FY_A)){
-		this->GenerateTargetDir(MOVE_LEFT);
+		key = MOVE_LEFT;
 	}else if (FyCheckHotKeyStatus(FY_S)){
-		this->GenerateTargetDir(MOVE_BACK);
+		key = MOVE_BACK;
 	}else if (FyCheckHotKeyStatus(FY_D)){
-		this->GenerateTargetDir(MOVE_RIGHT);
+		key = MOVE_RIGHT;
 	}
+
+	this->GenerateTargetDir(key);
 	
 	if (this->isOnTargetDir()){
 		//sprintf(debug ,"in move\n");
-		this->CharacterMoveForward();
+		this->CharacterMoveForward(key);
 	}else{
 		int ret = this->TurnToTargetDir();
 		//sprintf(debug ,"in turning: ret=%d\n", ret);
