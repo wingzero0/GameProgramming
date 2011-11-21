@@ -19,11 +19,18 @@ GameControl::GameControl(ActorStateMachine * character, OBJECTid camera){
 	this->mainChar = character;
 }
 
-BOOL GameControl::CharacterMoveForward(){
+BOOL GameControl::CharacterMoveForward(DIRECTION_CODE code){
 	FnActor actor;
 	actor.Object(this->mainChar->character);
 	int ret = actor.MoveForward(MOVE_LENGTH,TRUE, FALSE, 0.0, TRUE);
 	this->mainChar->ChangeState(STATERUN);
+
+	if (code == MOVE_FORWARD) {
+		GameControl::CamFallow();
+	}
+	else if (code == MOVE_BACK) {
+		GameControl::CamBackOff();
+	}
 	//sprintf(debug ,"%d FY_W ret = %d\n",this->mainChar->character, ret);
 	return TRUE;
 }
@@ -189,4 +196,47 @@ int GameControl::Rotate(float theta, float vector[2]){
 	vector[1] = y;
 	//sprintf(debug, "%stheta:%f v0:%f v1:%f\n", debug, theta,vector[0], vector[1]);
 	return 0;
+}
+
+void GameControl::CamFallow() {
+	FnObject cam;
+	cam.Object(this->camera);
+
+	float fDir[3];
+	float uDir[3];
+	fDir[0] = 0.0;
+	fDir[1] = 1.0;
+	fDir[2] = 0.0;
+	uDir[0] = 0.0;
+	uDir[1] = 0.0;
+	uDir[2] = 1.0;
+	
+	cam.SetWorldDirection(fDir,uDir);
+
+	cam.MoveForward(MOVE_LENGTH,TRUE, FALSE, 0.0, TRUE);
+
+	fDir[2] = -0.2;
+	uDir[1] = 0.2;
+	cam.SetWorldDirection(fDir,uDir);
+}
+void GameControl::CamBackOff() {
+	FnObject cam;
+	cam.Object(this->camera);
+
+	float fDir[3];
+	float uDir[3];
+	fDir[0] = 0.0;
+	fDir[1] = 1.0;
+	fDir[2] = 0.0;
+	uDir[0] = 0.0;
+	uDir[1] = 0.0;
+	uDir[2] = 1.0;
+	
+	cam.SetWorldDirection(fDir,uDir);
+
+	cam.MoveForward(-MOVE_LENGTH,TRUE, FALSE, 0.0, TRUE);
+
+	fDir[2] = -0.2;
+	uDir[1] = 0.2;
+	cam.SetWorldDirection(fDir,uDir);
 }
