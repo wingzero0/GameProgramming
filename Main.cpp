@@ -138,7 +138,7 @@ BOOL initLyubu(){ // init Lyubu and Camera
 	actor.Object(lyubu);
 	float pos[3];
 	pos[0] = 3569.0;
-	pos[1] = -3208;
+	pos[1] = -3210;
 	pos[2] = 100;
 	actor.SetPosition(pos);
 	
@@ -191,9 +191,11 @@ BOOL initLyubu(){ // init Lyubu and Camera
 	sprintf(debug, "%sface:%f %f %f\n", debug,fDir[0],fDir[1],fDir[2]);
 	sprintf(debug, "%sup:%f %f %f\n", debug, uDir[0],uDir[1],uDir[2]);
 
+
 	fDir[2] = 0.0f;
 	uDir[1] = 0.0f;
 	actor.SetWorldDirection(fDir,uDir);
+
 
 	//kc = new KeyboardControl(lyubu, cID);
 	ActorStateMachine * lyubuState = new ActorStateMachine(lyubu);
@@ -240,7 +242,12 @@ void GetPosDetail(char *buffer){
 	sprintf(buffer, "carmer pos[0] = %f,pos[1] = %f,pos[2] = %f \n", pos[0],pos[1],pos[2]);
 	sprintf(buffer, "%scarmer fDir[0] = %f,fDir[1] = %f,fDir[2] = %f \n", buffer, fDir[0],fDir[1],fDir[2]);
 	sprintf(buffer, "%scarmer uDir[0] = %f,uDir[1] = %f,uDir[2] = %f \n", buffer, fDir[0],fDir[1],fDir[2]);
-	
+	/*
+	FnActor actor;
+	actor.Object(lyubu);
+	actor.GetWorldPosition(pos);
+	sprintf(buffer, "lyubu pos[0] = %f,pos[1] = %f,pos[2] = %f \n", pos[0],pos[1],pos[2]);	
+	*/
 }
 
 BOOL BlindKeys(){
