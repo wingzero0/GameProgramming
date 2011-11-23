@@ -37,11 +37,12 @@ int KeyboardControl::DirControl(){
 		key = MOVE_RIGHT;
 	}
 
-	this->GenerateTargetDir(key);
+	float theta = this->GenerateTargetDir(key);
 	
 	if (this->isOnTargetDir()){
 		//sprintf(debug ,"in move\n");
 		this->CharacterMoveForward(key);
+		this->CamRotate(theta, key);
 	}else{
 		int ret = this->TurnToTargetDir();
 		//sprintf(debug ,"in turning: ret=%d\n", ret);
