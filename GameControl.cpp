@@ -4,6 +4,8 @@
 #define FLOAT_ERROR 0.001
 #define MOVE_LENGTH 10.0
 extern char debug[1024];
+extern OBJECTid tID;
+extern ACTORid lyubu;
 
 GameControl::GameControl(void)
 {
@@ -199,6 +201,10 @@ int GameControl::Rotate(float theta, float vector[2]){
 }
 
 void GameControl::CamFallow() {
+	float cam_pos[3], ly_pos[3];
+	FnActor actor;
+	actor.Object(lyubu);
+	
 	FnObject cam;
 	cam.Object(this->camera);
 
@@ -215,9 +221,24 @@ void GameControl::CamFallow() {
 
 	cam.MoveForward(MOVE_LENGTH,TRUE, FALSE, 0.0, TRUE);
 
+	actor.GetWorldPosition(ly_pos);
+	cam.GetWorldPosition(cam_pos);
+	float dis = (cam_pos[0] - ly_pos[0]) * (cam_pos[0] - ly_pos[0]) + (cam_pos[1] - ly_pos[1]) * (cam_pos[1] - ly_pos[1]);
+	sprintf(debug, "%s distance between camera and lyubu is %f\n", debug, dis);
+
+	if (dis < 129600) {
+		cam.MoveForward(-MOVE_LENGTH,TRUE, FALSE, 0.0, TRUE);
+	}
+
+	BOOL flag = cam.PutOnTerrain(tID,FALSE,115.0);
+
+	if (flag == FALSE) {
+		sprintf(debug, "%s put on fail\n", debug);
+	}	
 	fDir[2] = -0.2;
 	uDir[1] = 0.2;
 	cam.SetWorldDirection(fDir,uDir);
+
 }
 void GameControl::CamBackOff() {
 	FnObject cam;
@@ -236,7 +257,15 @@ void GameControl::CamBackOff() {
 
 	cam.MoveForward(-MOVE_LENGTH,TRUE, FALSE, 0.0, TRUE);
 
+	BOOL flag = cam.PutOnTerrain(tID,FALSE,115.0);
+
+	if (flag == FALSE) {
+		sprintf(debug, "%s put on fail\n", debug);
+	}	
+
 	fDir[2] = -0.2;
 	uDir[1] = 0.2;
 	cam.SetWorldDirection(fDir,uDir);
+
+
 }
