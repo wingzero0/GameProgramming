@@ -63,7 +63,7 @@ BOOL GameControl::CharacterSetIdle(){
 	return TRUE;
 }
 
-int GameControl::GenerateTargetDir(DIRECTION_CODE code){
+float GameControl::GenerateTargetDir(DIRECTION_CODE code){
 	FnCamera cam;
 	cam.Object(this->camera);
 	float camPos[3];
@@ -86,7 +86,7 @@ int GameControl::GenerateTargetDir(DIRECTION_CODE code){
 		this->dir[2] = 0.0f;
 		this->dir_normalize(this->dir);
 	}else if (code == MOVE_LEFT || code == MOVE_RIGHT){
-		this->CalcLeftRight(code);
+		return this->CalcLeftRight(code);
 	}
 	return 0;
 }
@@ -159,7 +159,7 @@ int GameControl::dir_normalize(float pos[3]){
 	return 0;
 }
 
-int GameControl::CalcLeftRight(DIRECTION_CODE code){
+float GameControl::CalcLeftRight(DIRECTION_CODE code){
 	FnActor act;
 	act.Object(this->mainChar->character);
 	float aPos[3];
@@ -197,7 +197,7 @@ int GameControl::CalcLeftRight(DIRECTION_CODE code){
 
 	this->dir_normalize(this->dir);
 	//sprintf(debug, "%sdir:%f %f %f\n", debug, this->dir[0], this->dir[1], this->dir[2]);
-	return 0;
+	return theta;
 }
 
 int GameControl::Rotate(float theta, float vector[2]){
@@ -280,4 +280,53 @@ void GameControl::CamBackOff() {
 	uDir[1] = 0.2;
 	cam.SetWorldDirection(fDir,uDir);
 
+}
+void GameControl::CamRotate(float theta, int key) {
+	sprintf(debug, "%s theta is %f, and key is %d\n", debug, theta, key);
+
+	FnObject cam;
+	cam.Object(this->camera);
+	
+	float oriFDir[3], oriUDir[3];
+	/*
+	cam.GetWorldDirection(oriFDir,oriUDir);
+
+	float fDir[3];
+	float uDir[3];
+	fDir[0] = oriFDir[0];
+	fDir[1] = oriFDir[1];
+	fDir[2] = 0.0;
+	uDir[0] = oriUDir[0];
+	uDir[1] = oriUDir[1];
+	uDir[2] = oriUDir[2];
+
+	cam.SetWorldDirection(fDir,uDir);
+	*/
+	cam.GetDirection(oriFDir,oriUDir);
+
+	float fDir[3];
+	float uDir[3];
+	fDir[0] = oriFDir[0];
+	fDir[1] = oriFDir[1];
+	fDir[2] = 0.0;
+	uDir[0] = oriUDir[0];
+	uDir[1] = oriUDir[1];
+	uDir[2] = 1.0;
+
+	cam.SetDirection(fDir,uDir);
+	
+	cam.Rotate(Y_AXIS, theta * 180 / PI, LOCAL);
+	/*
+	float nowFDir[3], nowUDir[3];	
+	cam.GetWorldDirection(nowFDir,nowUDir);
+	fDir[0] = nowFDir[0];
+	fDir[1] = nowFDir[1];
+	fDir[2] = oriFDir[2];
+	uDir[0] = nowUDir[0];
+	uDir[1] = nowUDir[1];
+	uDir[2] = oriUDir[2];
+	
+	cam.SetWorldDirection(fDir, uDir);
+	*/
+	
 }
