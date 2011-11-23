@@ -5,7 +5,7 @@
 #define MOVE_LENGTH 10.0
 extern char debug[1024];
 extern OBJECTid tID;
-extern ACTORid lyubu;
+//extern ACTORid lyubu;
 
 GameControl::GameControl(void)
 {
@@ -24,17 +24,29 @@ GameControl::GameControl(ActorStateMachine * character, OBJECTid camera){
 BOOL GameControl::CharacterMoveForward(DIRECTION_CODE code){
 	FnActor actor;
 	actor.Object(this->mainChar->character);
+	BOOL beBlock;
 	int ret = actor.MoveForward(MOVE_LENGTH,TRUE, FALSE, 0.0, TRUE);
 	this->mainChar->ChangeState(STATERUN);
 
+	if (ret == 0){
+		beBlock = TRUE;
+	}else{
+		beBlock = FALSE;
+	}
+
+	// please check "beBlock" and decide what to do.
 	if (code == MOVE_FORWARD) {
 		GameControl::CamFallow();
 	}
 	else if (code == MOVE_BACK) {
 		GameControl::CamBackOff();
 	}
-	//sprintf(debug ,"%d FY_W ret = %d\n",this->mainChar->character, ret);
-	return TRUE;
+	
+	if (ret != 0){ // ret will be -1 if the character hit the wall 
+		return FALSE;
+	}else{
+		return TRUE;
+	}
 }
 
 BOOL GameControl::CharacterNormalAttack(){
@@ -203,7 +215,7 @@ int GameControl::Rotate(float theta, float vector[2]){
 void GameControl::CamFallow() {
 	float cam_pos[3], ly_pos[3];
 	FnActor actor;
-	actor.Object(lyubu);
+	actor.Object(this->mainChar->character);
 	
 	FnObject cam;
 	cam.Object(this->camera);
@@ -224,17 +236,18 @@ void GameControl::CamFallow() {
 	actor.GetWorldPosition(ly_pos);
 	cam.GetWorldPosition(cam_pos);
 	float dis = (cam_pos[0] - ly_pos[0]) * (cam_pos[0] - ly_pos[0]) + (cam_pos[1] - ly_pos[1]) * (cam_pos[1] - ly_pos[1]);
-	sprintf(debug, "%s distance between camera and lyubu is %f\n", debug, dis);
+	//sprintf(debug, "%s distance between camera and lyubu is %f\n", debug, dis);
 
 	if (dis < 129600) {
 		cam.MoveForward(-MOVE_LENGTH,TRUE, FALSE, 0.0, TRUE);
 	}
-
+	
 	BOOL flag = cam.PutOnTerrain(tID,FALSE,115.0);
 
 	if (flag == FALSE) {
 		sprintf(debug, "%s put on fail\n", debug);
-	}	
+	}
+	
 	fDir[2] = -0.2;
 	uDir[1] = 0.2;
 	cam.SetWorldDirection(fDir,uDir);
@@ -243,7 +256,7 @@ void GameControl::CamFallow() {
 void GameControl::CamBackOff() {
 	FnObject cam;
 	cam.Object(this->camera);
-
+	
 	float fDir[3];
 	float uDir[3];
 	fDir[0] = 0.0;
@@ -256,16 +269,15 @@ void GameControl::CamBackOff() {
 	cam.SetWorldDirection(fDir,uDir);
 
 	cam.MoveForward(-MOVE_LENGTH,TRUE, FALSE, 0.0, TRUE);
-
+	
 	BOOL flag = cam.PutOnTerrain(tID,FALSE,115.0);
 
 	if (flag == FALSE) {
 		sprintf(debug, "%s put on fail\n", debug);
-	}	
-
+	}
+	
 	fDir[2] = -0.2;
 	uDir[1] = 0.2;
 	cam.SetWorldDirection(fDir,uDir);
-
 
 }
