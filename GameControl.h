@@ -28,11 +28,12 @@ public:
 	BOOL CharacterSetIdle();
 	int TurnToTargetDir(float degree = 30.0f);
 	BOOL isOnTargetDir();
-	int GenerateTargetDir(DIRECTION_CODE code);
+	int GenerateTargetDir(DIRECTION_CODE code);	//return the angle from CalcLeftRight()
 	int Rotate(float theta, float vector[2]);
-	int CalcLeftRight(DIRECTION_CODE code);
+	void CalcLeftRight(DIRECTION_CODE code);	//return the angle the object should turn
 	void CamFallow();
 	void CamBackOff();
+	void CamPointToActor();
 private:
 	int dir_normalize(float pos[3]);
 };
