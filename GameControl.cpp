@@ -63,7 +63,11 @@ BOOL GameControl::CharacterSetIdle(){
 	return TRUE;
 }
 
+<<<<<<< HEAD
 float GameControl::GenerateTargetDir(DIRECTION_CODE code){
+=======
+int GameControl::GenerateTargetDir(DIRECTION_CODE code){
+>>>>>>> gameprogramming/master
 	FnCamera cam;
 	cam.Object(this->camera);
 	float camPos[3];
@@ -86,7 +90,11 @@ float GameControl::GenerateTargetDir(DIRECTION_CODE code){
 		this->dir[2] = 0.0f;
 		this->dir_normalize(this->dir);
 	}else if (code == MOVE_LEFT || code == MOVE_RIGHT){
+<<<<<<< HEAD
 		return this->CalcLeftRight(code);
+=======
+		this->CalcLeftRight(code);
+>>>>>>> gameprogramming/master
 	}
 	return 0;
 }
@@ -159,7 +167,11 @@ int GameControl::dir_normalize(float pos[3]){
 	return 0;
 }
 
+<<<<<<< HEAD
 float GameControl::CalcLeftRight(DIRECTION_CODE code){
+=======
+int GameControl::CalcLeftRight(DIRECTION_CODE code){
+>>>>>>> gameprogramming/master
 	FnActor act;
 	act.Object(this->mainChar->character);
 	float aPos[3];
@@ -197,7 +209,11 @@ float GameControl::CalcLeftRight(DIRECTION_CODE code){
 
 	this->dir_normalize(this->dir);
 	//sprintf(debug, "%sdir:%f %f %f\n", debug, this->dir[0], this->dir[1], this->dir[2]);
+<<<<<<< HEAD
 	return theta;
+=======
+	return 0;
+>>>>>>> gameprogramming/master
 }
 
 int GameControl::Rotate(float theta, float vector[2]){
@@ -280,6 +296,7 @@ void GameControl::CamBackOff() {
 	uDir[1] = 0.2;
 	cam.SetWorldDirection(fDir,uDir);
 
+<<<<<<< HEAD
 }
 void GameControl::CamRotate(float theta, int key) {
 	FnActor act;
@@ -355,4 +372,6 @@ void GameControl::CamRotate(float theta, int key) {
 	cam.SetWorldDirection(fDir, uDir);
 	*/
 	
+=======
+>>>>>>> gameprogramming/master
 }
