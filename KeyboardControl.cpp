@@ -42,7 +42,7 @@ int KeyboardControl::DirControl(){
 	if (this->isOnTargetDir()){
 		//sprintf(debug ,"in move\n");
 		this->CharacterMoveForward(key);
-		this->CamRotate(theta, key);
+		this->CamPointToActor();
 	}else{
 		int ret = this->TurnToTargetDir();
 		//sprintf(debug ,"in turning: ret=%d\n", ret);
