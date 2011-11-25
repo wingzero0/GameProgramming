@@ -159,7 +159,7 @@ int GameControl::dir_normalize(float pos[3]){
 	return 0;
 }
 
-int GameControl::CalcLeftRight(DIRECTION_CODE code){
+void GameControl::CalcLeftRight(DIRECTION_CODE code){
 	FnActor act;
 	act.Object(this->mainChar->character);
 	float aPos[3];
@@ -197,7 +197,6 @@ int GameControl::CalcLeftRight(DIRECTION_CODE code){
 
 	this->dir_normalize(this->dir);
 	//sprintf(debug, "%sdir:%f %f %f\n", debug, this->dir[0], this->dir[1], this->dir[2]);
-	return 0;
 }
 
 int GameControl::Rotate(float theta, float vector[2]){
@@ -220,17 +219,20 @@ void GameControl::CamFallow() {
 	FnObject cam;
 	cam.Object(this->camera);
 
-	float fDir[3];
-	float uDir[3];
-	fDir[0] = 0.0;
-	fDir[1] = 1.0;
-	fDir[2] = 0.0;
-	uDir[0] = 0.0;
-	uDir[1] = 0.0;
-	uDir[2] = 1.0;
+	float fDir[3], uDir[3];
+	float tempFDir[3], tempUDir[3];
 	
-	cam.SetWorldDirection(fDir,uDir);
+	cam.GetWorldDirection(fDir,uDir);
 
+	tempFDir[0] = fDir[0];
+	tempFDir[1] = fDir[1];
+	tempFDir[2] = 0.0;
+	tempUDir[0] = 0.0;
+	tempUDir[1] = 0.0;
+	tempUDir[2] = uDir[2];
+
+	cam.SetWorldDirection(tempFDir,tempUDir);
+	
 	cam.MoveForward(MOVE_LENGTH,TRUE, FALSE, 0.0, TRUE);
 
 	actor.GetWorldPosition(ly_pos);
@@ -257,20 +259,43 @@ void GameControl::CamBackOff() {
 	FnObject cam;
 	cam.Object(this->camera);
 	
-	float fDir[3];
-	float uDir[3];
-	fDir[0] = 0.0;
-	fDir[1] = 1.0;
-	fDir[2] = 0.0;
-	uDir[0] = 0.0;
-	uDir[1] = 0.0;
-	uDir[2] = 1.0;
-	
-	cam.SetWorldDirection(fDir,uDir);
 
-	cam.MoveForward(-MOVE_LENGTH,TRUE, FALSE, 0.0, TRUE);
+	float fDir[3], uDir[3];
+	float tempFDir[3], tempUDir[3];
 	
-	BOOL flag = cam.PutOnTerrain(tID,FALSE,115.0);
+	cam.GetWorldDirection(fDir,uDir);
+
+	tempFDir[0] = fDir[0];
+	tempFDir[1] = fDir[1];
+	tempFDir[2] = 0.0;
+	tempUDir[0] = 0.0;
+	tempUDir[1] = 0.0;
+	tempUDir[2] = uDir[2];
+
+	cam.SetWorldDirection(tempFDir,tempUDir);
+	int ret = cam.MoveForward(-MOVE_LENGTH,TRUE + 1, FALSE, 0.0, TRUE);
+
+	BOOL flag;
+	if (ret == 0){	//camera is blocked
+		flag = cam.PutOnTerrain(tID,FALSE,115.0);
+	}else{
+		cam.MoveForward(-0.1, FALSE, 0.0, TRUE);	//prevent the actor be under the camera, or it can't go out there
+		sprintf(debug, "%s Camera is blocked\n", debug);
+		float pos[3];
+		cam.GetWorldPosition(pos);
+		if (pos[2] > 300) {
+			flag = cam.PutOnTerrain(tID,FALSE,pos[2]);
+		}
+		else {
+			flag = cam.PutOnTerrain(tID,FALSE,pos[2] + MOVE_LENGTH / 2);
+		}
+		CamPointToActor();
+		
+	}
+
+
+	
+	//BOOL flag = cam.PutOnTerrain(tID,FALSE,115.0);
 
 	if (flag == FALSE) {
 		sprintf(debug, "%s put on fail\n", debug);
@@ -280,4 +305,38 @@ void GameControl::CamBackOff() {
 	uDir[1] = 0.2;
 	cam.SetWorldDirection(fDir,uDir);
 
+}
+
+void GameControl::CamPointToActor() {
+	float aPos[3], cPos[3];
+	float aFDir[3], aUDir[3];
+	float vec[3] = {0};	//vector point to actor from camera
+
+	FnActor act;
+	act.Object(this->mainChar->character);
+	act.GetWorldPosition(aPos);
+	
+	act.GetWorldDirection(aFDir, aUDir);
+	
+	FnCamera cam;
+	cam.Object(this->camera);
+	cam.GetWorldPosition(cPos);
+
+	vec[0] = aPos[0] - cPos[0];
+	vec[1] = aPos[1] - cPos[1];
+	vec[2] = (aPos[2] + 40) - cPos[2];	//the height of actor is about 40
+	dir_normalize(vec);
+	//vec[2] = -0.2;
+
+	float cp[3] = {0};	//aUDir cross to vec
+	cp[0] = aUDir[1] * vec[2] - aUDir[2] * vec[1];
+	cp[1] = aUDir[2] * vec[0] - aUDir[0] * vec[2];
+	cp[2] = aUDir[0] * vec[1] - aUDir[1] * vec[0];
+
+	float cUDir[3];	//vec cross to cp
+	cUDir[0] = vec[1] * cp[2] - vec[2] * cp[1];
+	cUDir[1] = vec[2] * cp[0] - vec[0] * cp[2];
+	cUDir[2] = vec[0] * cp[1] - vec[1] * cp[0];
+
+	cam.SetWorldDirection(vec, cUDir);
 }
