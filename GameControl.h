@@ -37,5 +37,6 @@ public:
 	int CamRevolution(DIRECTION_CODE code);
 private:
 	int dir_normalize(float pos[3]);
+	BOOL CamInTop;
 };
 
