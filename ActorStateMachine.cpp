@@ -14,13 +14,32 @@ ActorStateMachine::~ActorStateMachine(void)
 ActorStateMachine::ActorStateMachine(ACTORid character){
 	this->character = character;
 	this->state = STATEIDLE;
+	this->attackDisable = FALSE;
+	this->currentAttackIndex = 0;
+	this->lastAttackIndex = 0;
+}
+
+BOOL ActorStateMachine::CanAttack(){
+	if (this->state == STATEIDLE || this->state == STATERUN){ 
+		return TRUE;
+	}else if (this->state == STATEATTACK && this->attackDisable == FALSE){
+		return TRUE;
+	}else{
+		return FALSE;
+	}
 }
 
 BOOL ActorStateMachine::CanBeControl(){
+	/*
 	if (this->state == STATEATTACK || this->state == STATEBEATTACK){
 		return FALSE;
 	}else{
 		return TRUE;
+	}*/
+	if (this->state == STATEIDLE || this->state == STATERUN){
+		return TRUE;
+	}else {
+		return FALSE;
 	}
 }
 
@@ -52,6 +71,49 @@ int ActorStateMachine::ChangeState(ActorState s){
 		if (actor.Play(0,START, 0.0, FALSE,TRUE) == FALSE){
 			sprintf(debug, "%s play action failed\n", debug);
 		}
+	}else if (s == STATEATTACK){
+		// Attack start;
+		this->startAttack = TRUE;
 	}
 	return 0;
+}
+
+BOOL ActorStateMachine::CharacterSetIdle(){
+	if (this->CanBeControl() == TRUE){
+		this->ChangeState(STATEIDLE);
+		return TRUE;
+	}else{
+		return FALSE;
+	}
+}
+
+BOOL ActorStateMachine::AppendAttackCode(ATTACK_CODE code){
+	if (this->CanAttack() == TRUE){
+		this->ChangeState(STATEATTACK);
+		this->attackKeyQueue[this->lastAttackIndex] = code;
+		this->lastAttackIndex++;
+		sprintf(debug, "%s lastAttackIndex:%d\n", debug,lastAttackIndex);
+		if (code == HEAVY_ATT || this->lastAttackIndex >= MAXATTACK){
+			sprintf(debug, "attack disable = true lastAttackIndex:%d\n",lastAttackIndex);
+			this->attackDisable = TRUE;
+		}
+		return TRUE;
+	}
+	return FALSE;
+}
+
+BOOL ActorStateMachine::PlayAction(int skip){
+	FnActor actor;
+	actor.Object(this->character);
+	if (this->CanBeControl() == TRUE){
+		actor.Play(0,LOOP, (float)skip, FALSE,TRUE);
+	}else if (this->state == STATEATTACK){
+
+	}
+	return TRUE;
+}
+
+BOOL ActorStateMachine::PlayAttackAction(int skip){
+	//this->
+	return FALSE;
 }
