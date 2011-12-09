@@ -277,7 +277,7 @@ void Reset(WORLDid gID, BYTE code, BOOL value){
 void KeyboardAttackCommand(WORLDid gID, BYTE code, BOOL value){
 	if (code == FY_J && FyCheckHotKeyStatus(FY_J) == TRUE){
 		kc->AppendAttackCode(NORMAL_ATT);
-	}else if(code == FY_K){
+	}else if(code == FY_K && FyCheckHotKeyStatus(FY_K) == TRUE){
 		kc->AppendAttackCode(HEAVY_ATT);
 	}
 }
@@ -315,8 +315,8 @@ BOOL BlindKeys(){
 	FyBindMouseFunction(MIDDLE_MOUSE, InitZoom, ZoomCam, NULL, NULL);
 	FyBindMouseFunction(RIGHT_MOUSE, InitMove, MoveCam, NULL, NULL);
 
-	//FyDefineHotKey(FY_J, KeyboardAttackCommand, FALSE);
-	FyDefineHotKey(FY_J, KeyboardAttackCommand, TRUE);
+	FyDefineHotKey(FY_J, KeyboardAttackCommand, FALSE);
+	//FyDefineHotKey(FY_J, KeyboardAttackCommand, TRUE);
 	FyDefineHotKey(FY_K, KeyboardAttackCommand, FALSE);
 	return TRUE;
 }
