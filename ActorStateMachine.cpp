@@ -55,7 +55,7 @@ int ActorStateMachine::ChangeState(ActorState s){
 		actor.Object(this->character);
 		ACTIONid actionID;
 		if (s == STATEIDLE){
-			actionID = actor.GetBodyAction(NULL,"Idle");
+			actionID = actor.GetBodyAction(NULL,"CombatIdle");
 		}else if (s == STATERUN){
 			actionID = actor.GetBodyAction(NULL,"RUN");
 		}

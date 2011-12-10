@@ -11,6 +11,7 @@ Last Updated : 1010, 2004, C.Wang
 #include "TheFlyWin32.h"
 #include "KeyboardControl.h"
 #include "LyubuStateMachine.h"
+#include "AIControl.h"
 
 int oldX, oldY, oldXM, oldYM, oldXMM, oldYMM;
 
@@ -22,6 +23,7 @@ OBJECTid tID;
 ACTORid lyubu;
 ACTORid donzo;
 KeyboardControl *kc;
+AIControl *npc;
 
 char debug[1024] = "\0";
 char loopBuff[1024] = "\0";
@@ -106,7 +108,7 @@ void main(int argc, char **argv)
 	camera.Translate(0.0f, 10.0f, 100.0f, LOCAL);
 	
 	initLyubu();
-	//initNPC();
+	initNPC();
 	// translate the light
 	FnLight light;
 	light.Object(lID);
@@ -153,7 +155,7 @@ BOOL initLyubu(){ // init Lyubu and Camera
 		return FALSE;
 	}
 	// set lyubu idle action
-	ACTIONid idleID = actor.GetBodyAction(NULL,"IDLE");
+	ACTIONid idleID = actor.GetBodyAction(NULL,"CombatIdle");
 	//ACTIONid idleID = actor.GetBodyAction(NULL,"WALK");
 	if (idleID == FAILED_ID){
 		sprintf(debug, "%s get action failed\n", debug);
@@ -224,7 +226,7 @@ BOOL initNPC(){
 	actor.Object(donzo);
 	float pos[3];
 	pos[0] = 3569.0;
-	pos[1] = -3210;
+	pos[1] = -3010;
 	pos[2] = 100;
 	actor.SetPosition(pos);
 
@@ -234,15 +236,8 @@ BOOL initNPC(){
 		sprintf(debug, "%s put on fail\n", debug);
 		return FALSE;
 	}
-	// set lyubu idle action
-	ACTIONid idleID = actor.GetBodyAction(NULL,"RUN");
-	//ACTIONid idleID = actor.GetBodyAction(NULL,"WALK");
-	if (idleID == FAILED_ID){
-		sprintf(debug, "%s get action failed\n", debug);
-		return FALSE;
-	}else{
-		sprintf(debug, "%s get action success\n", debug);
-	}
+	// set donzo idle action
+	ACTIONid idleID = actor.GetBodyAction(NULL,"CombatIdle");
 	
 	//actor.MakeCurrentAction(0,NULL,idleID,0.0,TRUE);
 	//if (actor.MakeCurrentAction(0,NULL,FAILED_ID) == FAILED_ID){
@@ -256,6 +251,8 @@ BOOL initNPC(){
 		sprintf(debug, "%s play action failed\n", debug);
 	}
 	
+	npc = new AIControl();
+	npc->AddNPC(donzo);
 	return TRUE;
 }
 
@@ -265,11 +262,14 @@ void Reset(WORLDid gID, BYTE code, BOOL value){
 			FnScene scene;
 			scene.Object(sID);
 			scene.DeleteActor(lyubu);
+			scene.DeleteActor(donzo);
 			debug[0] = '\0';
 			ActorStateMachine * lyubuState = kc->mainChar;
 			delete lyubuState;
 			delete kc;
+			delete npc;
 			initLyubu();
+			initNPC();
 		}
 	}	
 }
@@ -284,6 +284,7 @@ void KeyboardAttackCommand(WORLDid gID, BYTE code, BOOL value){
 
 void PlayAction(int skip){
 	kc->PlayAction(skip);
+	npc->PlayAction(skip);
 }
 
 void GetPosDetail(char *buffer){

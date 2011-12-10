@@ -12,5 +12,6 @@ public:
 	AIControl(void);
 	virtual ~AIControl(void);
 	int AddNPC(ACTORid ncp);
+	void PlayAction(int skip);
 };
 
