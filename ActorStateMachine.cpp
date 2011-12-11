@@ -44,14 +44,14 @@ BOOL ActorStateMachine::CanBeControl(){
 	}
 }
 
-int ActorStateMachine::ChangeState(ActorState s){
-	if (this->state == s){
+int ActorStateMachine::ChangeState(ActorState s, BOOL forceSet){
+	if (forceSet == FALSE && this->state == s){
 		return 0;// keep the past action play
 	}else{
 		this->state = s;
 	}
 
-	if (s == STATEIDLE || s == STATERUN){
+	if (s == STATEIDLE || s == STATERUN || s == STATEDAMAGE){
 		FnActor actor;
 		actor.Object(this->character);
 		ACTIONid actionID;
@@ -59,6 +59,8 @@ int ActorStateMachine::ChangeState(ActorState s){
 			actionID = actor.GetBodyAction(NULL,"CombatIdle");
 		}else if (s == STATERUN){
 			actionID = actor.GetBodyAction(NULL,"RUN");
+		}else if (s == STATEDAMAGE){
+			actionID = actor.GetBodyAction(NULL,"DAMAGEL");
 		}
 		if (actionID == FAILED_ID){
 			sprintf(debug, "%s get action failed\n", debug);
@@ -73,7 +75,7 @@ int ActorStateMachine::ChangeState(ActorState s){
 			sprintf(debug, "%s play action failed\n", debug);
 		}
 	}else if (s == STATEATTACK){
-		// Attack start;
+		// Serial attack start;
 		this->startAttack = TRUE;
 	}
 	return 0;
@@ -109,7 +111,13 @@ BOOL ActorStateMachine::PlayAction(int skip){
 	if (this->CanBeControl() == TRUE){
 		actor.Play(0,LOOP, (float)skip, FALSE,TRUE);
 	}else if (this->state == STATEATTACK){
-
+		this->PlayAttackAction(skip);
+	}else if (this->state == STATEDAMAGE){
+		BOOL ret = actor.Play(0,ONCE, (float)skip, TRUE,TRUE);
+		if (ret == FALSE){
+			sprintf(debug, "%s damagel end\n",debug);
+			this->ChangeState(STATEIDLE);
+		}
 	}
 	return TRUE;
 }

@@ -65,6 +65,7 @@ void BattleRoom::PerformAttack(){
 	}
 	if (playerStateMachine->state == STATEATTACK ){
 		if (this->playerStateMachine->newAttack == TRUE){
+			this->playerStateMachine->newAttack = FALSE;
 			this->playerHitMap.clear();
 		}
 		FnActor actor;
@@ -86,6 +87,7 @@ void BattleRoom::PerformAttack(){
 				if (playerHitMap.find(tmpid) == playerHitMap.end()){
 					// get a new victim;
 					sprintf(debug, "%s new victim\n",debug);
+					this->AreanList[i]->ChangeState(STATEDAMAGE,TRUE);
 				}
 				this->playerHitMap[tmpid] = TRUE;
 			}

@@ -38,7 +38,7 @@ public:
 	virtual ~ActorStateMachine(void);
 	ActorStateMachine(ACTORid character);
 	//int ChangeStateAndAction();
-	int ChangeState(ActorState s);
+	int ChangeState(ActorState s, BOOL forceCheck = FALSE);
 	BOOL CharacterSetIdle();
 	BOOL CanBeControl();
 	BOOL CanWalk();

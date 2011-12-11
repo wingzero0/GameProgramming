@@ -302,7 +302,7 @@ void KeyboardAttackCommand(WORLDid gID, BYTE code, BOOL value){
 void PlayAction(int skip){
 	kc->PlayAction(skip);
 	npc->PlayAction(skip);
-	bRoom->RefreshArena();
+	//bRoom->RefreshArena();
 }
 
 void GetPosDetail(char *buffer){
@@ -350,7 +350,7 @@ void CleanDebugBuff(WORLDid gID, BYTE code, BOOL value){
 void GameAI(int skip)
 {
 	kc->Command();
-	//bRoom->RefreshArena();
+	bRoom->RefreshArena();
 }
 
 void Render(int skip){

@@ -306,7 +306,7 @@ void GameControl::CamBackOff() {
 	
 	cam.SetWorldDirection(tempFDir,tempUDir);
 	float dis = (cam_pos[0] - ly_pos[0]) * (cam_pos[0] - ly_pos[0]) + (cam_pos[1] - ly_pos[1]) * (cam_pos[1] - ly_pos[1]);
-	int ret;
+	int ret = 0;
 	if (dis < 129600) {
 		ret = cam.MoveForward(-MOVE_LENGTH,TRUE, FALSE, 0.0, TRUE);
 	}

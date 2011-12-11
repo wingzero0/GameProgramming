@@ -15,18 +15,6 @@ LyubuStateMachine::LyubuStateMachine(ACTORid character):ActorStateMachine(charac
 
 }
 
-BOOL LyubuStateMachine::PlayAction(int skip){
-	FnActor actor;
-	actor.Object(this->character);
-	if (this->CanBeControl() == TRUE){
-		//actor.Play(0,LOOP, (float)skip, FALSE,TRUE);
-		actor.Play(0,LOOP, (float)skip, TRUE,TRUE);
-	}else if (this->state == STATEATTACK){
-		this->PlayAttackAction(skip);
-	}
-	return TRUE;
-}
-
 BOOL LyubuStateMachine::PlayAttackAction(int skip){
 	FnActor actor;
 	actor.Object(this->character);
@@ -67,7 +55,8 @@ BOOL LyubuStateMachine::PlayAttackAction(int skip){
 				return FALSE;
 			}
 		}else{
-			this->newAttack = FALSE;
+			//this->newAttack = FALSE;
+			//BattleRoom will set it off after performing the first attack;
 			return TRUE;
 		}
 	}
