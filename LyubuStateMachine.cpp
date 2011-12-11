@@ -19,7 +19,8 @@ BOOL LyubuStateMachine::PlayAction(int skip){
 	FnActor actor;
 	actor.Object(this->character);
 	if (this->CanBeControl() == TRUE){
-		actor.Play(0,LOOP, (float)skip, FALSE,TRUE);
+		//actor.Play(0,LOOP, (float)skip, FALSE,TRUE);
+		actor.Play(0,LOOP, (float)skip, TRUE,TRUE);
 	}else if (this->state == STATEATTACK){
 		this->PlayAttackAction(skip);
 	}
@@ -34,7 +35,7 @@ BOOL LyubuStateMachine::PlayAttackAction(int skip){
 	char attackName[20] = "\0";
 	if (this->startAttack == TRUE){// first attack
 		this->startAttack = FALSE; // reset
-		sprintf(debug, "%sstart attack\n", debug);
+		//sprintf(debug, "%sstart attack\n", debug);
 		if (this->attackKeyQueue[currentAttackIndex] == NORMAL_ATT ){
 			sprintf(attackName, "NormalAttack%d", currentAttackIndex + 1); 
 			// attackName should be "NormalAttack1"
@@ -44,7 +45,8 @@ BOOL LyubuStateMachine::PlayAttackAction(int skip){
 		}
 	}else{
 		// the attack name should be refine from reading the file
-		if (actor.Play(0,ONCE, (float)skip, FALSE,TRUE) == FALSE){
+		//if (actor.Play(0,ONCE, (float)skip, FALSE,TRUE) == FALSE){
+		if (actor.Play(0,ONCE, (float)skip, TRUE,TRUE) == FALSE){
 			// play the next one
 			currentAttackIndex++;
 			if (currentAttackIndex >= lastAttackIndex){
@@ -65,11 +67,12 @@ BOOL LyubuStateMachine::PlayAttackAction(int skip){
 				return FALSE;
 			}
 		}else{
+			this->newAttack = FALSE;
 			return TRUE;
 		}
 	}
 	actionID = actor.GetBodyAction(NULL,attackName);
-	sprintf(debug, "%s geting pos %s lastAttack%d\n", debug, attackName, lastAttackIndex );
+	//sprintf(debug, "%s geting pos %s lastAttack%d\n", debug, attackName, lastAttackIndex );
 	if (actionID == FAILED_ID){
 		sprintf(debug, "%s get %s fail\n", attackName);
 		return FALSE;
@@ -79,9 +82,13 @@ BOOL LyubuStateMachine::PlayAttackAction(int skip){
 		return FALSE;
 	}
 
-	if (actor.Play(0,START, 0.0, FALSE,TRUE) == FALSE){
+	//if (actor.Play(0,START, 0.0, FALSE,TRUE) == FALSE){
+	if (actor.Play(0,START, 0.0, TRUE,TRUE) == FALSE){
 		sprintf(debug, "%s play action failed\n", debug);
 		return FALSE;
 	}
+	// it performs the new attack
+	// set the flag here and BattleRoom will check it.
+	this->newAttack = TRUE;	
 	return TRUE;
 }

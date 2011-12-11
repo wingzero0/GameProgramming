@@ -26,6 +26,7 @@ public:
 	ActorState state;
 	ACTORid character;
 	int attackKeyQueue[MAXATTACK];
+	BOOL newAttack;
 protected:
 	int currentAttackIndex;
 	int lastAttackIndex;

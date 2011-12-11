@@ -17,6 +17,7 @@ ActorStateMachine::ActorStateMachine(ACTORid character){
 	this->attackDisable = FALSE;
 	this->currentAttackIndex = 0;
 	this->lastAttackIndex = 0;
+	this->newAttack = FALSE;
 }
 
 BOOL ActorStateMachine::CanAttack(){
@@ -92,9 +93,9 @@ BOOL ActorStateMachine::AppendAttackCode(ATTACK_CODE code){
 		this->ChangeState(STATEATTACK);
 		this->attackKeyQueue[this->lastAttackIndex] = code;
 		this->lastAttackIndex++;
-		sprintf(debug, "%s lastAttackIndex:%d\n", debug,lastAttackIndex);
+		//sprintf(debug, "%s lastAttackIndex:%d\n", debug,lastAttackIndex);
 		if (code == HEAVY_ATT || this->lastAttackIndex >= MAXATTACK){
-			sprintf(debug, "attack disable = true lastAttackIndex:%d\n",lastAttackIndex);
+			//sprintf(debug, "attack disable = true lastAttackIndex:%d\n",lastAttackIndex);
 			this->attackDisable = TRUE;
 		}
 		return TRUE;

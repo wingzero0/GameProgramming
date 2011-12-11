@@ -12,6 +12,7 @@ Last Updated : 1010, 2004, C.Wang
 #include "KeyboardControl.h"
 #include "LyubuStateMachine.h"
 #include "AIControl.h"
+#include "BattleRoom.h"
 
 int oldX, oldY, oldXM, oldYM, oldXMM, oldYMM;
 
@@ -24,6 +25,7 @@ ACTORid lyubu;
 ACTORid donzo;
 KeyboardControl *kc;
 AIControl *npc;
+BattleRoom *bRoom;
 
 char debug[1024] = "\0";
 char loopBuff[1024] = "\0";
@@ -33,6 +35,9 @@ void QuitGame(WORLDid, BYTE, BOOL);
 void CleanDebugBuff(WORLDid, BYTE, BOOL);
 BOOL initLyubu();
 BOOL initNPC();
+BOOL initBattleRoom(GameControl *player, AIControl *npc);
+void CharacterInit();
+
 void Reset(WORLDid gID, BYTE code, BOOL value);
 void PlayAction(int skip);
 void GameAI(int);
@@ -107,8 +112,7 @@ void main(int argc, char **argv)
 	camera.Rotate(X_AXIS, 90.0f, LOCAL);
 	camera.Translate(0.0f, 10.0f, 100.0f, LOCAL);
 	
-	initLyubu();
-	initNPC();
+	CharacterInit();
 	// translate the light
 	FnLight light;
 	light.Object(lID);
@@ -124,6 +128,12 @@ void main(int argc, char **argv)
 
 	// invoke the system
 	FyInvokeTheFly(TRUE);
+}
+
+void CharacterInit(){
+	initLyubu();
+	initNPC();
+	initBattleRoom(kc, npc);
 }
 
 BOOL initLyubu(){ // init Lyubu and Camera
@@ -256,6 +266,11 @@ BOOL initNPC(){
 	return TRUE;
 }
 
+BOOL initBattleRoom(GameControl *player, AIControl *npc){
+	bRoom = new BattleRoom(player->mainChar, npc->npcStateMachineList);
+	return TRUE;
+}
+
 void Reset(WORLDid gID, BYTE code, BOOL value){
 	if (code == FY_F1) {
 		if (value) {
@@ -268,8 +283,10 @@ void Reset(WORLDid gID, BYTE code, BOOL value){
 			delete lyubuState;
 			delete kc;
 			delete npc;
-			initLyubu();
-			initNPC();
+			delete bRoom;
+			CharacterInit();
+			//initLyubu();
+			//initNPC();
 		}
 	}	
 }
@@ -285,6 +302,7 @@ void KeyboardAttackCommand(WORLDid gID, BYTE code, BOOL value){
 void PlayAction(int skip){
 	kc->PlayAction(skip);
 	npc->PlayAction(skip);
+	bRoom->RefreshArena();
 }
 
 void GetPosDetail(char *buffer){
@@ -332,6 +350,7 @@ void CleanDebugBuff(WORLDid gID, BYTE code, BOOL value){
 void GameAI(int skip)
 {
 	kc->Command();
+	//bRoom->RefreshArena();
 }
 
 void Render(int skip){
