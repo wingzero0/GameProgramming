@@ -18,6 +18,7 @@ ActorStateMachine::ActorStateMachine(ACTORid character){
 	this->currentAttackIndex = 0;
 	this->lastAttackIndex = 0;
 	this->newAttack = FALSE;
+	this->life = 3;
 }
 
 BOOL ActorStateMachine::CanAttack(){
@@ -51,16 +52,27 @@ int ActorStateMachine::ChangeState(ActorState s, BOOL forceSet){
 		this->state = s;
 	}
 
-	if (s == STATEIDLE || s == STATERUN || s == STATEDAMAGE){
+	if (s == STATEIDLE || s == STATERUN || s == STATEDAMAGE || s == STATEDIE){
 		FnActor actor;
 		actor.Object(this->character);
-		ACTIONid actionID;
+		ACTIONid actionID = FAILED_ID;
 		if (s == STATEIDLE){
 			actionID = actor.GetBodyAction(NULL,"CombatIdle");
 		}else if (s == STATERUN){
 			actionID = actor.GetBodyAction(NULL,"RUN");
 		}else if (s == STATEDAMAGE){
 			actionID = actor.GetBodyAction(NULL,"DAMAGEL");
+			this->life --;
+			sprintf(debug, "%s life=%d\n", debug, this->life);
+			if (this->life == 0) {
+				this->ChangeState(STATEDIE, TRUE);
+			}
+
+		}else if (s == STATERUN){
+			actionID = actor.GetBodyAction(NULL,"DIE");
+			if (actionID == FAILED_ID) {
+				actionID = actor.GetBodyAction(NULL,"DEAD");
+			}
 		}
 		if (actionID == FAILED_ID){
 			sprintf(debug, "%s get action failed\n", debug);

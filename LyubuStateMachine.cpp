@@ -12,13 +12,25 @@ LyubuStateMachine::~LyubuStateMachine(void)
 }
 
 LyubuStateMachine::LyubuStateMachine(ACTORid character):ActorStateMachine(character){
-
+	attackState = TRUE;
 }
-
+/*
+BOOL LyubuStateMachine::isNowAttackState(void) {	//if now is attack state(i.e. var attackState == true), return true
+	return attackState;
+}
+void LyubuStateMachine::resetAttackState(void) {	//reset var attackState
+	attackState = FALSE;
+}
+void LyubuStateMachine::setAttackState(void) {	//set var attackState
+	attackState = TRUE;
+}
+*/
 BOOL LyubuStateMachine::PlayAttackAction(int skip){
 	FnActor actor;
 	actor.Object(this->character);
 	ACTIONid actionID;
+
+	//this->setAttackState();
 
 	char attackName[20] = "\0";
 	if (this->startAttack == TRUE){// first attack

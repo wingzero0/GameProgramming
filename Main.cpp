@@ -26,6 +26,7 @@ ACTORid donzo;
 KeyboardControl *kc;
 AIControl *npc;
 BattleRoom *bRoom;
+LyubuStateMachine * lyubuState;
 
 char debug[1024] = "\0";
 char loopBuff[1024] = "\0";
@@ -213,7 +214,7 @@ BOOL initLyubu(){ // init Lyubu and Camera
 
 
 	//kc = new KeyboardControl(lyubu, cID);
-	LyubuStateMachine * lyubuState = new LyubuStateMachine(lyubu);
+	lyubuState = new LyubuStateMachine(lyubu);
 	kc = new KeyboardControl(lyubuState, cID);
 	sprintf(debug, "%sactorID=%d cID=%d",debug, lyubu, cID);
 	
@@ -302,6 +303,13 @@ void KeyboardAttackCommand(WORLDid gID, BYTE code, BOOL value){
 void PlayAction(int skip){
 	kc->PlayAction(skip);
 	npc->PlayAction(skip);
+	kc->CamPointToActor();
+	/*
+	if (lyubuState->isNowAttackState()) {
+		kc->CamFallow();
+		lyubuState->resetAttackState();
+	}
+	*/
 	//bRoom->RefreshArena();
 }
 
