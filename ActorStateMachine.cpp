@@ -2,6 +2,8 @@
 
 extern char debug[1024];
 
+using namespace std;
+
 ActorStateMachine::ActorStateMachine(void)
 {
 }
@@ -11,7 +13,7 @@ ActorStateMachine::~ActorStateMachine(void)
 {
 }
 
-ActorStateMachine::ActorStateMachine(ACTORid character){
+ActorStateMachine::ActorStateMachine(ACTORid character, char * ActionFilename){
 	this->character = character;
 	this->state = STATEIDLE;
 	this->attackDisable = FALSE;
@@ -19,6 +21,37 @@ ActorStateMachine::ActorStateMachine(ACTORid character){
 	this->lastAttackIndex = 0;
 	this->newAttack = FALSE;
 	this->life = 3;
+	this->initActionIDMap(ActionFilename);
+}
+
+BOOL ActorStateMachine::initActionIDMap(char *ActionFilename){
+	FILE *fp = fopen(ActionFilename,"r");
+	if (fp == NULL){
+		sprintf(debug, "%s ActionFilename failed: %s\n", debug, ActionFilename);
+		return FALSE;
+	}
+	char systemName[100];
+	char designName[100];
+	int ret;
+
+	FnActor actor;
+	actor.Object(this->character);
+	ACTIONid aID;
+	while (!feof(fp)){
+		ret = fscanf(fp, "%s %s", systemName, designName);
+		if (ret != 2){
+			sprintf(debug, "%s fscanf actionID failed\n", debug, systemName, designName);
+			return FALSE;
+		}
+		aID = actor.GetBodyAction(NULL,designName);
+		if (aID == FAILED_ID){
+			sprintf(debug, "%s init actionID %s %s failed\n", debug, systemName, designName);
+			continue;
+		}
+		string actionName(systemName);
+		this->ActionIDMap[actionName] = aID;
+	}
+	return TRUE;
 }
 
 BOOL ActorStateMachine::CanAttack(){
@@ -57,11 +90,11 @@ int ActorStateMachine::ChangeState(ActorState s, BOOL forceSet){
 		actor.Object(this->character);
 		ACTIONid actionID = FAILED_ID;
 		if (s == STATEIDLE){
-			actionID = actor.GetBodyAction(NULL,"CombatIdle");
+			actionID = this->ActionIDMap["CombatIdle"];
 		}else if (s == STATERUN){
-			actionID = actor.GetBodyAction(NULL,"RUN");
+			actionID = this->ActionIDMap["Run"];
 		}else if (s == STATEDAMAGE){
-			actionID = actor.GetBodyAction(NULL,"DAMAGEL");
+			actionID = this->ActionIDMap["LightDamage"];
 			this->life --;
 			sprintf(debug, "%s life=%d\n", debug, this->life);
 			if (this->life <= 0) {
@@ -71,14 +104,7 @@ int ActorStateMachine::ChangeState(ActorState s, BOOL forceSet){
 				return 0;
 			}
 		}else if (s == STATEDIE){
-			actionID = actor.GetBodyAction(NULL,"DIE");
-			if (actionID == FAILED_ID) {
-				actionID = actor.GetBodyAction(NULL,"DEAD");
-			}
-		}
-		if (actionID == FAILED_ID){
-			sprintf(debug, "%s get action failed\n", debug);
-			return -1;
+			actionID = this->ActionIDMap["Die"];
 		}
 	
 		if (actor.MakeCurrentAction(0,NULL,actionID) == FAILED_ID){

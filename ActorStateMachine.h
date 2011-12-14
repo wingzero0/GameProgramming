@@ -1,5 +1,7 @@
 #pragma once
 #include "TheFlyWin32.h"
+#include <map>
+#include <string>
 
 #define STATEATTACK 0
 #define STATEDAMAGE 1
@@ -33,10 +35,12 @@ protected:
 	BOOL attackDisable;
 	BOOL startAttack;
 	int life;
+	BOOL initActionIDMap(char *ActionFilename);
+	std::map<std::string, ACTIONid> ActionIDMap;
 public:
 	ActorStateMachine(void);
 	virtual ~ActorStateMachine(void);
-	ActorStateMachine(ACTORid character);
+	ActorStateMachine(ACTORid character, char * ActionFilename);
 	//int ChangeStateAndAction();
 	int ChangeState(ActorState s, BOOL forceCheck = FALSE);
 	BOOL CharacterSetIdle();
