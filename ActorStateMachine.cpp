@@ -65,11 +65,7 @@ int ActorStateMachine::ChangeState(ActorState s, BOOL forceSet){
 			this->life --;
 			sprintf(debug, "%s life=%d\n", debug, this->life);
 			if (this->life == 0) {
-<<<<<<< HEAD
-				this->ChangeState(STATEDIE, true);
-=======
 				this->ChangeState(STATEDIE, TRUE);
->>>>>>> c4005e4b92ee98e506a8ca8c41908d37756c5290
 			}
 
 		}else if (s == STATERUN){
