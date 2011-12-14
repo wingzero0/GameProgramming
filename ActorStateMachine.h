@@ -29,6 +29,7 @@ public:
 	ACTORid character;
 	int attackKeyQueue[MAXATTACK];
 	BOOL newAttack;
+	BOOL effectiveAttack;
 protected:
 	int currentAttackIndex;
 	int lastAttackIndex;
@@ -37,6 +38,9 @@ protected:
 	int life;
 	BOOL initActionIDMap(char *ActionFilename);
 	std::map<std::string, ACTIONid> ActionIDMap;
+	virtual BOOL PlayAttackAction(int skip);
+	BOOL SetNewAction(std::string systemName);
+	virtual BOOL UpdateEffectiveAttack();
 public:
 	ActorStateMachine(void);
 	virtual ~ActorStateMachine(void);
@@ -50,6 +54,6 @@ public:
 	int Damage();
 	BOOL AppendAttackCode(ATTACK_CODE code);
 	virtual BOOL PlayAction(int skip);
-	virtual BOOL PlayAttackAction(int skip);
+	BOOL CheckEffectiveAttack();
 };
 

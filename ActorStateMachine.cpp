@@ -20,6 +20,7 @@ ActorStateMachine::ActorStateMachine(ACTORid character, char * ActionFilename){
 	this->currentAttackIndex = 0;
 	this->lastAttackIndex = 0;
 	this->newAttack = FALSE;
+	this->effectiveAttack = FALSE;
 	this->life = 3;
 	this->initActionIDMap(ActionFilename);
 }
@@ -86,15 +87,12 @@ int ActorStateMachine::ChangeState(ActorState s, BOOL forceSet){
 	}
 
 	if (s == STATEIDLE || s == STATERUN || s == STATEDAMAGE || s == STATEDIE){
-		FnActor actor;
-		actor.Object(this->character);
-		ACTIONid actionID = FAILED_ID;
 		if (s == STATEIDLE){
-			actionID = this->ActionIDMap["CombatIdle"];
+			this->SetNewAction("CombatIdle");
 		}else if (s == STATERUN){
-			actionID = this->ActionIDMap["Run"];
+			this->SetNewAction("Run");
 		}else if (s == STATEDAMAGE){
-			actionID = this->ActionIDMap["LightDamage"];
+			this->SetNewAction("LightDamage");
 			this->life --;
 			sprintf(debug, "%s life=%d\n", debug, this->life);
 			if (this->life <= 0) {
@@ -104,15 +102,7 @@ int ActorStateMachine::ChangeState(ActorState s, BOOL forceSet){
 				return 0;
 			}
 		}else if (s == STATEDIE){
-			actionID = this->ActionIDMap["Die"];
-		}
-	
-		if (actor.MakeCurrentAction(0,NULL,actionID) == FAILED_ID){
-			sprintf(debug, "%s make current fail\n", debug);
-		}
-	
-		if (actor.Play(0,START, 0.0, FALSE,TRUE) == FALSE){
-			sprintf(debug, "%s play action failed\n", debug);
+			this->SetNewAction("Die");
 		}
 	}else if (s == STATEATTACK){
 		// Serial attack start;
@@ -155,7 +145,7 @@ BOOL ActorStateMachine::PlayAction(int skip){
 	}else if (this->state == STATEDAMAGE){
 		BOOL ret = actor.Play(0,ONCE, (float)skip, TRUE,TRUE);
 		if (ret == FALSE){
-			sprintf(debug, "%s damagel end\n",debug);
+			sprintf(debug, "%s damage end\n",debug);
 			this->ChangeState(STATEIDLE);
 		}
 	}else if (this->state == STATEDIE){
@@ -170,5 +160,33 @@ BOOL ActorStateMachine::PlayAction(int skip){
 
 BOOL ActorStateMachine::PlayAttackAction(int skip){
 	//this->
+	return FALSE;
+}
+
+BOOL ActorStateMachine::SetNewAction(string systemName){
+	ACTIONid actionID = this->ActionIDMap[systemName];
+	
+	FnActor actor;
+	actor.Object(this->character);
+	if (actor.MakeCurrentAction(0,NULL,actionID) == FAILED_ID){
+		sprintf(debug, "%s make current action %s fail\n", debug, systemName.c_str());
+		return FALSE;
+	}else{
+		//sprintf(debug, "%s %s make successful\n", debug, systemName.c_str());
+	}
+	
+	if (actor.Play(0,START, 0.0, FALSE,TRUE) == FALSE){
+		sprintf(debug, "%s %s play action failed\n", debug, systemName.c_str());
+		return FALSE;
+	}else{
+		//sprintf(debug, "%s %s play successful\n", debug, systemName.c_str());
+	}
+	return TRUE;
+}
+
+BOOL ActorStateMachine::CheckEffectiveAttack(){
+	return this->effectiveAttack;
+}
+BOOL ActorStateMachine::UpdateEffectiveAttack(){
 	return FALSE;
 }

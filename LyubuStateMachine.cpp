@@ -44,11 +44,18 @@ BOOL LyubuStateMachine::PlayAttackAction(int skip){
 			sprintf(attackName, "H%d", currentAttackIndex + 1); 
 			// attackName should be "H1"
 		}
+		string systemName(attackName);
+		this->SetNewAction(systemName);
+		// it performs the new attack
+		// set the flag here and BattleRoom will check it.
+		this->newAttack = TRUE;	
 	}else{
 		// the attack name should be refine from reading the file
-		//if (actor.Play(0,ONCE, (float)skip, FALSE,TRUE) == FALSE){
-		if (actor.Play(0,ONCE, (float)skip, TRUE,TRUE) == FALSE){
+		BOOL ret = actor.Play(0,ONCE, (float)skip, TRUE,TRUE);
+		this->UpdateEffectiveAttack();
+		if (ret == FALSE){
 			// play the next one
+			this->effectiveAttack = FALSE;
 			currentAttackIndex++;
 			if (currentAttackIndex >= lastAttackIndex){
 				// finish attacking
@@ -67,28 +74,30 @@ BOOL LyubuStateMachine::PlayAttackAction(int skip){
 				sprintf(debug, "%s next Attack fail condition\n", debug);
 				return FALSE;
 			}
-		}else{
-			//this->newAttack = FALSE;
-			//BattleRoom will set it off after performing the first attack;
-			return TRUE;
+			string systemName(attackName);
+			this->SetNewAction(systemName);
+			// it performs the new attack
+			// set the flag here and BattleRoom will check it and set the flag to FALSE after checking.
+			this->newAttack = TRUE;	
 		}
 	}
-	//actionID = actor.GetBodyAction(NULL,attackName);
-	string systemName(attackName);
-	actionID = this->ActionIDMap[systemName];
-	sprintf(debug, "%s geting pos %s lastAttack%d\n", debug, systemName.c_str(), lastAttackIndex );
-
-	if (actor.MakeCurrentAction(0,NULL,actionID) == FAILED_ID){
-		sprintf(debug, "%s make current action %s fail\n", debug, systemName.c_str());
-		return FALSE;
-	}
-
-	if (actor.Play(0,START, 0.0, TRUE,TRUE) == FALSE){
-		sprintf(debug, "%s play action failed\n", debug);
-		return FALSE;
-	}
-	// it performs the new attack
-	// set the flag here and BattleRoom will check it.
-	this->newAttack = TRUE;	
+	//sprintf(debug, "%s lastAttack%d\n", debug, lastAttackIndex );
 	return TRUE;
+}
+
+BOOL LyubuStateMachine::UpdateEffectiveAttack(){
+	FnActor actor;
+	actor.Object(this->character);
+	float frame = actor.QueryCurrentFrame(0);
+	//sprintf(debug, "%s frame:%lf\n", debug, frame );
+	if (this->currentAttackIndex > 0 || this->attackKeyQueue[currentAttackIndex] == HEAVY_ATT){
+		if (frame > 10.0){
+			this->effectiveAttack =	TRUE;
+		}else{
+			this->effectiveAttack = FALSE;
+		}
+	}else{
+		this->effectiveAttack =	TRUE;
+	}
+	return FALSE;
 }
