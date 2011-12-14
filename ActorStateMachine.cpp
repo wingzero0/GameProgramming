@@ -64,11 +64,13 @@ int ActorStateMachine::ChangeState(ActorState s, BOOL forceSet){
 			actionID = actor.GetBodyAction(NULL,"DAMAGEL");
 			this->life --;
 			sprintf(debug, "%s life=%d\n", debug, this->life);
-			if (this->life == 0) {
+			if (this->life <= 0) {
+				// it will make a recursive call.
 				this->ChangeState(STATEDIE, TRUE);
+				// prevent the damage actionID will replace the die actionID
+				return 0;
 			}
-
-		}else if (s == STATERUN){
+		}else if (s == STATEDIE){
 			actionID = actor.GetBodyAction(NULL,"DIE");
 			if (actionID == FAILED_ID) {
 				actionID = actor.GetBodyAction(NULL,"DEAD");
@@ -130,6 +132,12 @@ BOOL ActorStateMachine::PlayAction(int skip){
 			sprintf(debug, "%s damagel end\n",debug);
 			this->ChangeState(STATEIDLE);
 		}
+	}else if (this->state == STATEDIE){
+		BOOL ret = actor.Play(0,ONCE, (float)skip, TRUE,TRUE);
+		/*
+		if (ret == FALSE){
+			sprintf(debug, "%s character die\n",debug);
+		}*/
 	}
 	return TRUE;
 }
