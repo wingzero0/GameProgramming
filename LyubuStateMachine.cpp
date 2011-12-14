@@ -4,7 +4,10 @@ extern char debug[1024];
 
 LyubuStateMachine::LyubuStateMachine(void)
 {
+<<<<<<< HEAD
 	attackState = false;
+=======
+>>>>>>> c4005e4b92ee98e506a8ca8c41908d37756c5290
 }
 
 
@@ -13,17 +16,28 @@ LyubuStateMachine::~LyubuStateMachine(void)
 }
 
 LyubuStateMachine::LyubuStateMachine(ACTORid character):ActorStateMachine(character){
+<<<<<<< HEAD
 
+=======
+	attackState = TRUE;
+>>>>>>> c4005e4b92ee98e506a8ca8c41908d37756c5290
 }
 /*
 BOOL LyubuStateMachine::isNowAttackState(void) {	//if now is attack state(i.e. var attackState == true), return true
 	return attackState;
 }
 void LyubuStateMachine::resetAttackState(void) {	//reset var attackState
+<<<<<<< HEAD
 	attackState = false;
 }
 void LyubuStateMachine::setAttackState(void) {	//set var attackState
 	attackState = true;
+=======
+	attackState = FALSE;
+}
+void LyubuStateMachine::setAttackState(void) {	//set var attackState
+	attackState = TRUE;
+>>>>>>> c4005e4b92ee98e506a8ca8c41908d37756c5290
 }
 */
 BOOL LyubuStateMachine::PlayAttackAction(int skip){
