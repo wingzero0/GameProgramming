@@ -17,6 +17,7 @@ public:
 	ActorStateMachine *mainChar;
 	OBJECTid camera;
 	float dir[3];
+	float actorOldPosition[3];
 public:
 	GameControl(void);
 	virtual ~GameControl(void);
