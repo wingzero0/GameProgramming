@@ -343,6 +343,8 @@ void GameControl::CamBackOff() {
 }
 
 void GameControl::CamPointToActor() {
+	sprintf(debug ,"in point to actor\n");
+
 	float aPos[3], cPos[3];
 	float aFDir[3], aUDir[3];
 	float vec[3] = {0};	//vector point to actor from camera
@@ -356,6 +358,24 @@ void GameControl::CamPointToActor() {
 	FnCamera cam;
 	cam.Object(this->camera);
 	cam.GetWorldPosition(cPos);
+	
+	/*
+	float movedDistance = sqrt((aPos[0] - actorOldPosition[0]) * (aPos[0] - actorOldPosition[0])
+		+ (aPos[1] - actorOldPosition[1]) * (aPos[1] - actorOldPosition[1])
+		+ (aPos[2] - actorOldPosition[2]) * (aPos[0] - actorOldPosition[2]));
+	sprintf(debug ,"%s\nmoved distance=%f\n", debug, movedDistance);
+	sprintf(debug ,"%s\nold position: %f %f %f\n", debug, actorOldPosition[0], actorOldPosition[1], actorOldPosition[2]);
+	sprintf(debug ,"%s\nnow position: %f %f %f\n", debug, aPos[0], aPos[1], aPos[2]);
+	if (movedDistance < 15) {
+		return;
+	} else {
+		this->actorOldPosition[0] = aPos[0];
+		this->actorOldPosition[1] = aPos[1];
+		this->actorOldPosition[2] = aPos[2];
+	}
+	*/
+	
+
 
 	vec[0] = aPos[0] - cPos[0];
 	vec[1] = aPos[1] - cPos[1];
