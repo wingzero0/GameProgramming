@@ -22,7 +22,7 @@ SCENEid sID;
 OBJECTid nID, cID, lID;
 OBJECTid tID;
 ACTORid lyubu;
-ACTORid donzo;
+ACTORid donzo, robber;
 KeyboardControl *kc;
 AIControl *npc;
 BattleRoom *bRoom;
@@ -261,8 +261,43 @@ BOOL initNPC(){
 		sprintf(debug, "%s play action failed\n", debug);
 	}
 	
+	robber = scene.LoadActor("Robber02");
+	if (robber == FAILED_ID){
+		return FALSE;
+	}
+	FnActor actor_robber;
+	actor_robber.Object(robber);
+	float pos_robber[3];
+	pos_robber[0] = 3569.0;
+	pos_robber[1] = -3010;
+	pos_robber[2] = 100;
+	actor_robber.SetPosition(pos_robber);
+
+	flag = actor_robber.PutOnTerrain(tID,FALSE,0.0);
+
+	if (flag == FALSE){
+		sprintf(debug, "%s put on fail\n", debug);
+		return FALSE;
+	}
+	// set donzo idle action
+	ACTIONid idleID_robber = actor_robber.GetBodyAction(NULL,"CombatIdle");
+	
+	//actor.MakeCurrentAction(0,NULL,idleID,0.0,TRUE);
+	//if (actor.MakeCurrentAction(0,NULL,FAILED_ID) == FAILED_ID){
+	if (actor_robber.MakeCurrentAction(0,NULL,idleID_robber) == FAILED_ID){
+		sprintf(debug, "%s make current fail\n", debug);
+	}else{
+		sprintf(debug, "%s make action success\n", debug);
+	}
+	
+	if (actor_robber.Play(0,START, 0.0, FALSE,TRUE) == FALSE){
+		sprintf(debug, "%s play action failed\n", debug);
+	}
+
+
 	npc = new AIControl();
 	npc->AddNPC(donzo,"Data\\DozonAction.txt");
+	npc->AddNPC(robber,"Data\\Robber02Action.txt");
 	return TRUE;
 }
 
