@@ -35,8 +35,10 @@ void BattleRoom::RefreshArena(){
 		if (this->CheckDistanceAndState(playerPos, npcPos, 
 				this->playerStateMachine->state, this->npcStateMachineList[i]->state ) == TRUE){
 			this->JoinArena( this->npcStateMachineList[i] );
+			this->npcStateMachineList[i]->ChangeState(STATEATTACK,TRUE);
 		}
 	}
+	//sprintf(debug, "%s npc state machine list size = %d\n",debug,this->npcStateMachineList.size());
 	this->PerformAttack();
 }
 
@@ -72,7 +74,8 @@ void BattleRoom::PerformAttack(){
 		actor.Object(this->playerStateMachine->character);
 		float pPos[3];
 		float pDir[3];
-		actor.GetWorldDirection(NULL,pDir);
+		//float pUDir[3];
+		actor.GetWorldDirection(pDir,NULL);
 		actor.GetWorldPosition(pPos);
 
 		FnActor npc;
@@ -80,11 +83,10 @@ void BattleRoom::PerformAttack(){
 		
 		for (int i= 0;i< this->AreanList.size();i++){
 			ACTORid tmpid = AreanList[i]->character;
-			npc.Object(tmpid);
-			npc.GetWorldPosition(nPos);
-
-			if (this->AttackCheck(pDir, pPos, nPos, BATTLE_RADIUS / 2) == TRUE){// lyubu attack area is the half of Battle raidus
-				if (playerHitMap.find(tmpid) == playerHitMap.end()){
+			if (playerHitMap.find(tmpid) == playerHitMap.end()){
+				npc.Object(tmpid);
+				npc.GetWorldPosition(nPos);
+				if (this->AttackCheck(pDir, pPos, nPos, BATTLE_RADIUS / 1.5) == TRUE){// lyubu attack area is the half of Battle raidus
 					// get a new victim;
 					sprintf(debug, "%s new victim\n",debug);
 					if ( this->AreanList[i]->state != STATEDIE){
@@ -98,5 +100,29 @@ void BattleRoom::PerformAttack(){
 }
 
 BOOL BattleRoom::AttackCheck(float attackerDir[3], float attackerPos[3], float vitimPos[3], float attackRange){
-	return TRUE;// for test
+	float dist = 0.0;
+	for (int i = 0;i< 3;i++){
+		dist += (attackerPos[i] - vitimPos[i]) * (attackerPos[i] - vitimPos[i]);
+	}
+	//sprintf(debug, "%s dist = %lf\n",debug,dist);
+	if ( dist >= attackRange){
+		return FALSE;
+	}
+	float cosine,dotProduct;
+	//float v[3];
+	dotProduct = 0.0;
+	for (int i = 0;i< 3;i++){
+		dotProduct += (vitimPos[i] - attackerPos[i]) * attackerDir[i];
+	}
+	float length = 0.0;
+	for (int i = 0;i< 3;i++){
+		length += (vitimPos[i] - attackerPos[i])* (vitimPos[i] - attackerPos[i]);
+	}
+	cosine = dotProduct / length;
+	//sprintf(debug, "%s cosine = %lf\n",debug,cosine);
+	if (cosine >= 0){
+		return TRUE;
+	}else{
+		return FALSE;
+	}
 }
