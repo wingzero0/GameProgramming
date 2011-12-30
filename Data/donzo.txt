@@ -1,0 +1,11 @@
+   Actions 10
+      CombatIdle   idle for combats
+      AttackL1     attack pose no. 1
+      AttackL2     attack pose no. 2
+      DamageL      damage pose for attacking (low damage)
+      DamageH      damage pose for attacking (high damage)
+      Run          for running
+      AttackH      heavy attack
+      Defance      defense pose
+      Die          die pose
+      HeavyAttack  another heavy attack

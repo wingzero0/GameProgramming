@@ -1,0 +1,9 @@
+Run	Run
+CombatIdle	CombatIdle
+N1	NormalAttack1
+N2	NormalAttack2 H1	HeavyAttack1
+
+HeavyDamage Damage1
+LightDamage	Damage2
+
+Die	Dead   

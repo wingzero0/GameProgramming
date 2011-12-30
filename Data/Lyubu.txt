@@ -1,0 +1,18 @@
+   Actions 17
+      Run            for running
+      CombatIdle     idle pose for combat
+      NormalAttack1  standard attack no. 1
+      NormalAttack2  standard attack no. 2
+      NormalAttack3  standard attack no. 3
+      NormalAttack4  standard attack no. 4
+      HeavyAttack1   heavy attack no. 1
+      HeavyAttack2   heavy attack no. 2
+      HeavyAttack3   heavy attack no. 3
+      HeavyDamaged   damage pose after attacked
+      RightDamaged   damage pose after attacked from right side
+      LeftDamaged    damage pose after attacked from left side
+      Die            for dying
+      Idle           idle
+      Walk           for walking
+      guard          defense from attacks
+      UltimateAttack ultimate attack

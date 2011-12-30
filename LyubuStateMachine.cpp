@@ -90,11 +90,13 @@ BOOL LyubuStateMachine::UpdateEffectiveAttack(){
 	actor.Object(this->character);
 	float frame = actor.QueryCurrentFrame(0);
 	//sprintf(debug, "%s frame:%lf\n", debug, frame );
-	if (this->currentAttackIndex > 0 || this->attackKeyQueue[currentAttackIndex] == HEAVY_ATT){
+	if (this->attackKeyQueue[currentAttackIndex]){
+		if (frame > 20.0){
+			this->effectiveAttack =	TRUE;
+		}
+	}else if (this->currentAttackIndex > 0){
 		if (frame > 10.0){
 			this->effectiveAttack =	TRUE;
-		}else{
-			this->effectiveAttack = FALSE;
 		}
 	}else{
 		this->effectiveAttack =	TRUE;
