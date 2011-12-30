@@ -1,0 +1,11 @@
+   Actions 10
+      CombatIdle     idle pose for combats
+      MoveRight      move to right
+      MoveLeft       move to left
+      NormalAttack1  attack pose no. 1
+      NormalAttack2  attack pose no. 2
+      HeavyAttack1   heavy attack
+      Damage1        damage pose no. 1
+      Damage2        damage pose no. 2
+      Dead           for dying
+      Run            for running
