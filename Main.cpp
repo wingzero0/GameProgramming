@@ -13,6 +13,7 @@ Last Updated : 1010, 2004, C.Wang
 #include "LyubuStateMachine.h"
 #include "AIControl.h"
 #include "BattleRoom.h"
+#include "FyFx.h"
 
 int oldX, oldY, oldXM, oldYM, oldXMM, oldYMM;
 
@@ -28,6 +29,8 @@ AIControl *npc;
 BattleRoom *bRoom;
 LyubuStateMachine * lyubuState;
 
+eF3DFX *fx00 = NULL;
+
 char debug[1024] = "\0";
 char loopBuff[1024] = "\0";
 void debug_message(char*, char*);
@@ -37,6 +40,7 @@ void CleanDebugBuff(WORLDid, BYTE, BOOL);
 BOOL initLyubu();
 BOOL initNPC();
 BOOL initBattleRoom(GameControl *player, AIControl *npc);
+BOOL initFX();
 void CharacterInit();
 
 void Reset(WORLDid gID, BYTE code, BOOL value);
@@ -135,6 +139,7 @@ void CharacterInit(){
 	initLyubu();
 	initNPC();
 	initBattleRoom(kc, npc);
+	initFX();
 }
 
 BOOL initLyubu(){ // init Lyubu and Camera
@@ -271,6 +276,36 @@ BOOL initBattleRoom(GameControl *player, AIControl *npc){
 	return TRUE;
 }
 
+BOOL initFX(){
+	FnWorld gw;
+	gw.Object(gID);
+	gw.SetTexturePath("Data\\FXs\\Textures");
+	gw.SetObjectPath("Data\\FXs\\Models");
+
+	fx00 = new eF3DFX(sID);
+	fx00->SetWorkPath("Data\\FXs");
+	BOOL beOK = fx00->Load("NoPigeon");
+
+	if (beOK == FALSE){
+		sprintf(debug, "%s fx load failed\n", debug);
+		return FALSE;
+	}else{
+		sprintf(debug, "%s fx load successful\n", debug);
+	}
+	float pos[3];
+	pos[0] = 3569.0;
+	pos[1] = -3210.0;
+	pos[2] = 0.0;
+
+	eF3DBaseFX *fx;
+	int i, numFX = fx00->NumberFXs();
+	for (i = 0; i < numFX; i++) {
+		fx = fx00->GetFX(i);
+		fx->InitPosition(pos);
+	}
+	return TRUE;
+}
+
 void Reset(WORLDid gID, BYTE code, BOOL value){
 	if (code == FY_F1) {
 		if (value) {
@@ -284,6 +319,10 @@ void Reset(WORLDid gID, BYTE code, BOOL value){
 			delete kc;
 			delete npc;
 			delete bRoom;
+			if (fx00 != NULL){
+				delete fx00;
+			}
+			fx00 = NULL;
 			CharacterInit();
 			//initLyubu();
 			//initNPC();
@@ -302,6 +341,16 @@ void KeyboardAttackCommand(WORLDid gID, BYTE code, BOOL value){
 void PlayAction(int skip){
 	kc->PlayAction(skip);
 	npc->PlayAction(skip);
+	if (fx00 != NULL) {
+      BOOL beOK = fx00->Play((float) skip);
+      if (!beOK) {
+         fx00->Reset();  // make it from the starting position and play it again
+
+         // if you just play the FX once, here you need to delete the FX
+         // delete fx00;
+         // fx00 = NULL;
+      }
+   }
 	/*
 	if (lyubuState->isNowAttackState()) {
 		kc->CamFallow();

@@ -96,7 +96,8 @@ int ActorStateMachine::ChangeState(ActorState s, BOOL forceSet){
 			FnActor actor;
 			actor.Object(this->character);
 			actor.MoveForward(-MOVE_LENGTH,TRUE, FALSE, 0.0, TRUE);
-			this->SetNewAction("LightDamage");
+			//this->SetNewAction("LightDamage");
+			this->SetNewAction("HeavyDamage");
 			this->life --;
 			sprintf(debug, "%s life=%d\n", debug, this->life);
 			if (this->life <= 0) {
