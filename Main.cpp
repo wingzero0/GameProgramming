@@ -139,7 +139,7 @@ void CharacterInit(){
 	initLyubu();
 	initNPC();
 	initBattleRoom(kc, npc);
-	initFX();
+	//initFX();
 }
 
 BOOL initLyubu(){ // init Lyubu and Camera
@@ -268,6 +268,7 @@ BOOL initNPC(){
 	
 	robber = scene.LoadActor("Robber02");
 	if (robber == FAILED_ID){
+		sprintf(debug, "%s Robber02 load fail\n", debug);
 		return FALSE;
 	}
 	FnActor actor_robber;
@@ -281,7 +282,6 @@ BOOL initNPC(){
 	flag = actor_robber.PutOnTerrain(tID,FALSE,0.0);
 
 	if (flag == FALSE){
-		sprintf(debug, "%s put on fail\n", debug);
 		return FALSE;
 	}
 	// set donzo idle action
@@ -348,6 +348,7 @@ void Reset(WORLDid gID, BYTE code, BOOL value){
 			scene.Object(sID);
 			scene.DeleteActor(lyubu);
 			scene.DeleteActor(donzo);
+			scene.DeleteActor(robber);
 			debug[0] = '\0';
 			ActorStateMachine * lyubuState = kc->mainChar;
 			delete lyubuState;
@@ -359,8 +360,6 @@ void Reset(WORLDid gID, BYTE code, BOOL value){
 			}
 			fx00 = NULL;
 			CharacterInit();
-			//initLyubu();
-			//initNPC();
 		}
 	}	
 }

@@ -8,7 +8,6 @@ public:
 	LyubuStateMachine(void);
 	virtual ~LyubuStateMachine(void);
 	LyubuStateMachine(ACTORid character, char *ActionFilename);
-	//virtual BOOL PlayAction(int skip);
 	virtual BOOL PlayAttackAction(int skip);
 protected:
 	virtual BOOL UpdateEffectiveAttack();

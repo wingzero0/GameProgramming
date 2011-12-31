@@ -97,6 +97,8 @@ int ActorStateMachine::ChangeState(ActorState s, BOOL forceSet){
 			actor.Object(this->character);
 			actor.MoveForward(-MOVE_LENGTH,TRUE, FALSE, 0.0, TRUE);
 			//this->SetNewAction("LightDamage");
+			this->currentAttackIndex = 0;
+			this->lastAttackIndex = 0;
 			this->SetNewAction("HeavyDamage");
 			this->life --;
 			sprintf(debug, "%s life=%d\n", debug, this->life);
@@ -164,8 +166,60 @@ BOOL ActorStateMachine::PlayAction(int skip){
 }
 
 BOOL ActorStateMachine::PlayAttackAction(int skip){
-	//this->
-	return FALSE;
+	FnActor actor;
+	actor.Object(this->character);
+	ACTIONid actionID;
+
+	char attackName[20] = "\0";
+	if (this->startAttack == TRUE){// first attack
+		this->startAttack = FALSE; // reset
+		//sprintf(debug, "%sstart attack\n", debug);
+		if (this->attackKeyQueue[currentAttackIndex] == NORMAL_ATT ){
+			sprintf(attackName, "N%d", currentAttackIndex + 1); 
+			// attackName should be "N1"
+		}else if (this->attackKeyQueue[currentAttackIndex] == HEAVY_ATT){
+			sprintf(attackName, "H%d", currentAttackIndex + 1); 
+			// attackName should be "H1"
+		}
+		string systemName(attackName);
+		this->SetNewAction(systemName);
+		// it performs the new attack
+		// set the flag here and BattleRoom will check it.
+		this->newAttack = TRUE;	
+	}else{
+		// the attack name should be refine from reading the file
+		BOOL ret = actor.Play(0,ONCE, (float)skip, TRUE,TRUE);
+		this->UpdateEffectiveAttack();
+		if (ret == FALSE){
+			// play the next one
+			this->effectiveAttack = FALSE;
+			currentAttackIndex++;
+			if (currentAttackIndex >= lastAttackIndex){
+				// finish attacking
+				this->ChangeState(STATEIDLE);// should be change into combatidle;
+				this->attackDisable = FALSE;
+				currentAttackIndex = 0;
+				lastAttackIndex = 0;
+				return FALSE;
+			}else if (this->attackKeyQueue[currentAttackIndex] == NORMAL_ATT){
+				// get the next one attacking pos
+				sprintf(attackName, "N%d", currentAttackIndex + 1);
+			}else if (this->attackKeyQueue[currentAttackIndex] == HEAVY_ATT){
+				// get the next one attacking pos
+				sprintf(attackName, "H%d", currentAttackIndex);
+			}else{
+				sprintf(debug, "%s next Attack fail condition\n", debug);
+				return FALSE;
+			}
+			string systemName(attackName);
+			this->SetNewAction(systemName);
+			// it performs the new attack
+			// set the flag here and BattleRoom will check it and set the flag to FALSE after checking.
+			this->newAttack = TRUE;	
+		}
+	}
+	//sprintf(debug, "%s lastAttack%d\n", debug, lastAttackIndex );
+	return TRUE;
 }
 
 BOOL ActorStateMachine::SetNewAction(string systemName){

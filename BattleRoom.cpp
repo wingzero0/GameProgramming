@@ -31,11 +31,12 @@ void BattleRoom::RefreshArena(){
 	for (int i =0;i< this->npcStateMachineList.size();i++){
 		npc.Object(this->npcStateMachineList[i]->character);
 		npc.GetWorldPosition(npcPos);
+		this->npcStateMachineList[i]->AppendAttackCode(NORMAL_ATT);
 		
 		if (this->CheckDistanceAndState(playerPos, npcPos, 
 				this->playerStateMachine->state, this->npcStateMachineList[i]->state ) == TRUE){
 			this->JoinArena( this->npcStateMachineList[i] );
-			this->npcStateMachineList[i]->ChangeState(STATEATTACK,TRUE);
+			//this->npcStateMachineList[i]->ChangeState(STATEATTACK,TRUE);
 		}
 	}
 	//sprintf(debug, "%s npc state machine list size = %d\n",debug,this->npcStateMachineList.size());

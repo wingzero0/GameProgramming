@@ -27,6 +27,8 @@ void LyubuStateMachine::setAttackState(void) {	//set var attackState
 }
 */
 BOOL LyubuStateMachine::PlayAttackAction(int skip){
+	//duplicate with parrent's PlayAttackAction
+	//this function can be removed (in future);
 	FnActor actor;
 	actor.Object(this->character);
 	ACTIONid actionID;
