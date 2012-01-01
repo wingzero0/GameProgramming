@@ -14,6 +14,7 @@ Last Updated : 1010, 2004, C.Wang
 #include "AIControl.h"
 #include "BattleRoom.h"
 #include "FyFx.h"
+#include "FyMedia.h"
 
 int oldX, oldY, oldXM, oldYM, oldXMM, oldYMM;
 
@@ -369,6 +370,8 @@ void KeyboardAttackCommand(WORLDid gID, BYTE code, BOOL value){
 		kc->AppendAttackCode(NORMAL_ATT);
 	}else if(code == FY_K && FyCheckHotKeyStatus(FY_K) == TRUE){
 		kc->AppendAttackCode(HEAVY_ATT);
+	}else if(code == FY_L && FyCheckHotKeyStatus(FY_L) == TRUE){
+		kc->AppendAttackCode(ULTIMATE_ATT);
 	}
 }
 
@@ -424,8 +427,8 @@ BOOL BlindKeys(){
 	FyBindMouseFunction(RIGHT_MOUSE, InitMove, MoveCam, NULL, NULL);
 
 	FyDefineHotKey(FY_J, KeyboardAttackCommand, FALSE);
-	//FyDefineHotKey(FY_J, KeyboardAttackCommand, TRUE);
 	FyDefineHotKey(FY_K, KeyboardAttackCommand, FALSE);
+	FyDefineHotKey(FY_L, KeyboardAttackCommand, FALSE);
 	return TRUE;
 }
 

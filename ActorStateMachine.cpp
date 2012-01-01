@@ -129,7 +129,15 @@ BOOL ActorStateMachine::CharacterSetIdle(){
 
 BOOL ActorStateMachine::AppendAttackCode(ATTACK_CODE code){
 	if (this->CanAttack() == TRUE){
-		this->ChangeState(STATEATTACK);
+		if (code == ULTIMATE_ATT){
+			this->ChangeState(STATEATTACK, TRUE);
+			this->attackDisable = TRUE;
+			this->currentAttackIndex = 0;
+			this->lastAttackIndex = 0;
+			//sprintf(debug, "%s get ultimate\n", debug);
+		}else{
+			this->ChangeState(STATEATTACK);
+		}
 		this->attackKeyQueue[this->lastAttackIndex] = code;
 		this->lastAttackIndex++;
 		//sprintf(debug, "%s lastAttackIndex:%d\n", debug,lastAttackIndex);
@@ -247,5 +255,10 @@ BOOL ActorStateMachine::CheckEffectiveAttack(){
 	return this->effectiveAttack;
 }
 BOOL ActorStateMachine::UpdateEffectiveAttack(){
+	return FALSE;
+}
+
+int ActorStateMachine::AttackEnemy(float enemyPos[3]){
+	// the return value is the attack power
 	return FALSE;
 }

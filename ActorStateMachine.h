@@ -16,7 +16,7 @@ typedef int ActorState;
 
 #define NORMAL_ATT 0
 #define HEAVY_ATT 1
-
+#define ULTIMATE_ATT 2
 typedef int ATTACK_CODE;
 
 // actor free meaning it can do anything by the controller.
@@ -55,5 +55,6 @@ public:
 	BOOL AppendAttackCode(ATTACK_CODE code);
 	virtual BOOL PlayAction(int skip);
 	BOOL CheckEffectiveAttack();
+	virtual int AttackEnemy(float enemyPos[3]);
 };
 
