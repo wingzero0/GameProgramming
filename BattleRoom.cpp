@@ -73,11 +73,11 @@ void BattleRoom::PerformAttack(){
 		}
 		FnActor actor;
 		actor.Object(this->playerStateMachine->character);
-		//float pPos[3];
+		float pPos[3];
 		//float pDir[3];
 		//float pUDir[3];
 		//actor.GetWorldDirection(pDir,NULL);
-		//actor.GetWorldPosition(pPos);
+		actor.GetWorldPosition(pPos);
 
 		FnActor npc;
 		float nPos[3];
@@ -87,13 +87,13 @@ void BattleRoom::PerformAttack(){
 			if (playerHitMap.find(tmpid) == playerHitMap.end()){
 				npc.Object(tmpid);
 				npc.GetWorldPosition(nPos);
-				if (this->playerStateMachine->AttackEnemy(nPos) > 0 ){
-				
-				//if (this->AttackCheck(pDir, pPos, nPos, BATTLE_RADIUS / 1.5) == TRUE){// lyubu attack area is the half of Battle raidus
+				int attackPower = this->playerStateMachine->AttackEnemy(nPos);
+				if (attackPower > 0 ){
 					// get a new victim;
 					sprintf(debug, "%s new victim\n",debug);
 					if ( this->AreanList[i]->state != STATEDIE){
-						this->AreanList[i]->ChangeState(STATEDAMAGE,TRUE);
+						this->AreanList[i]->TakeDamage(attackPower, TRUE, pPos);
+						//this->AreanList[i]->ChangeState(STATEDAMAGE,TRUE);
 					}
 					this->playerHitMap[tmpid] = TRUE;
 				}

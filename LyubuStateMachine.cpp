@@ -3,17 +3,20 @@
 extern char debug[1024];
 using namespace std;
 extern WORLDid gID;
+extern SCENEid sID;
 
 LyubuStateMachine::LyubuStateMachine(void)
 {
 }
 
 
-LyubuStateMachine::~LyubuStateMachine(void)
-{
+LyubuStateMachine::~LyubuStateMachine(void){
 	FnWorld gw;
 	gw.Object(gID);
 	gw.DeleteAudio(audioN1);
+	FnScene scene;
+	scene.Object(sID);
+	scene.DeleteObject(this->bloodID);
 }
 
 LyubuStateMachine::LyubuStateMachine(ACTORid character, char *ActionFilename):ActorStateMachine(character,ActionFilename){

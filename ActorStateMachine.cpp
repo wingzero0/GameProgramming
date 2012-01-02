@@ -1,7 +1,7 @@
 #include "ActorStateMachine.h"
 
 extern char debug[1024];
-
+extern SCENEid sID;
 using namespace std;
 #define MOVE_LENGTH 20.0
 
@@ -12,6 +12,9 @@ ActorStateMachine::ActorStateMachine(void)
 
 ActorStateMachine::~ActorStateMachine(void)
 {
+	FnScene scene;
+	scene.Object(sID);
+	scene.DeleteObject(this->bloodID);
 }
 
 ActorStateMachine::ActorStateMachine(ACTORid character, char * ActionFilename){
@@ -22,10 +25,35 @@ ActorStateMachine::ActorStateMachine(ACTORid character, char * ActionFilename){
 	this->lastAttackIndex = 0;
 	this->newAttack = FALSE;
 	this->effectiveAttack = FALSE;
-	this->life = 3;
 	this->initActionIDMap(ActionFilename);
+	this->initLife();
 }
 
+BOOL ActorStateMachine::initLife(){
+	this->life = 100;
+
+	FnScene scene;
+	scene.Object(sID);
+	bloodID = scene.CreateObject(ROOT);
+	FnObject blood;
+	blood.Object(bloodID);
+	//FnBillBoard blood;
+	//blood.Object(bloodID, 0);
+	FnActor actor;
+	actor.Object(this->character);
+	OBJECTid baseID = actor.GetBaseObject();
+
+	float pos[3], size[2], color[3];
+	pos[0] = 0.0f;
+	pos[1] = 0.0f;
+	pos[2] = 80.0f;
+	size[0] = 50.0f;
+	size[1] = 2.0f;
+	color[0] = 1.0f; color[1] = color[2] = 0.0f;
+	blood.Billboard(pos, size, NULL, 0, color);
+	blood.SetParent(baseID);
+	return TRUE;
+}
 BOOL ActorStateMachine::initActionIDMap(char *ActionFilename){
 	FILE *fp = fopen(ActionFilename,"r");
 	if (fp == NULL){
@@ -100,14 +128,6 @@ int ActorStateMachine::ChangeState(ActorState s, BOOL forceSet){
 			this->currentAttackIndex = 0;
 			this->lastAttackIndex = 0;
 			this->SetNewAction("HeavyDamage");
-			this->life --;
-			sprintf(debug, "%s life=%d\n", debug, this->life);
-			if (this->life <= 0) {
-				// it will make a recursive call.
-				this->ChangeState(STATEDIE, TRUE);
-				// prevent the damage actionID will replace the die actionID
-				return 0;
-			}
 		}else if (s == STATEDIE){
 			this->SetNewAction("Die");
 		}
@@ -176,7 +196,7 @@ BOOL ActorStateMachine::PlayAction(int skip){
 BOOL ActorStateMachine::PlayAttackAction(int skip){
 	FnActor actor;
 	actor.Object(this->character);
-	ACTIONid actionID;
+	//ACTIONid actionID;
 
 	char attackName[20] = "\0";
 	if (this->startAttack == TRUE){// first attack
@@ -261,4 +281,40 @@ BOOL ActorStateMachine::UpdateEffectiveAttack(){
 int ActorStateMachine::AttackEnemy(float enemyPos[3]){
 	// the return value is the attack power
 	return FALSE;
+}
+
+void ActorStateMachine::TakeDamage(float damage, BOOL beShot, float *attackerPos ){
+	FnActor actor;
+	actor.Object(character);
+	float pos[3];
+	float dir[3];
+	actor.GetWorldPosition(pos);
+	actor.GetWorldDirection(dir, NULL);
+	if (attackerPos !=NULL){
+		float newDir[3];
+		newDir[0] = attackerPos[0] - pos[0];
+		newDir[1] = attackerPos[1] - pos[1];
+		newDir[2] = 0.0f;
+		actor.SetWorldDirection(newDir,NULL);
+		if (beShot == TRUE){
+			actor.MoveForward(-OUTSHOT_DIS,TRUE, FALSE, 0.0, TRUE);
+		}else{
+			actor.MoveForward(-1.0f,TRUE, FALSE, 0.0, TRUE);
+		}
+		actor.SetWorldDirection(dir,NULL);
+	}
+	this->life -= damage;
+	sprintf(debug, "%s life=%d\n", debug, this->life);
+	if (this->life <= 0) {
+		this->ChangeState(STATEDIE, TRUE);
+	}else {
+		this->ChangeState(STATEDAMAGE, TRUE);
+	}
+
+	FnBillBoard blood;
+	blood.Object(bloodID, 0);
+	float size[2];
+	blood.GetSize(size);
+	size[0] = life / MAX_LIFE * 50.0f;
+	blood.SetSize(size);
 }
