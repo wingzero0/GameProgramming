@@ -301,7 +301,7 @@ BOOL initNPC(){
 	}
 
 
-	npc = new AIControl();
+	npc = new AIControl(lyubu);
 	npc->AddNPC(donzo,"Data\\DozonAction.txt");
 	npc->AddNPC(robber,"Data\\Robber02Action.txt");
 	return TRUE;
@@ -447,6 +447,8 @@ void GameAI(int skip)
 	kc->Command();
 	bRoom->RefreshArena();
 	kc->CamPointToActor();
+	npc->moveTowardLyubu();
+
 }
 
 void Render(int skip){
