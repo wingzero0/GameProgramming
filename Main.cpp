@@ -447,7 +447,7 @@ void GameAI(int skip)
 	kc->Command();
 	bRoom->RefreshArena();
 	kc->CamPointToActor();
-	npc->distanceBetweenLyubu();
+	npc->moveTowardLyubu();
 
 }
 
