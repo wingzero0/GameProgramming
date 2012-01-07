@@ -15,6 +15,11 @@ Last Updated : 1010, 2004, C.Wang
 #include "BattleRoom.h"
 #include "FyFx.h"
 #include "FyMedia.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+extern int errno;
 
 int oldX, oldY, oldXM, oldYM, oldXMM, oldYMM;
 
@@ -24,7 +29,8 @@ SCENEid sID;
 OBJECTid nID, cID, lID;
 OBJECTid tID;
 ACTORid lyubu;
-ACTORid donzo, robber;
+ACTORid donzo, robbers[100];
+int robbers_count = 0;
 KeyboardControl *kc;
 AIControl *npc;
 BattleRoom *bRoom;
@@ -266,44 +272,56 @@ BOOL initNPC(){
 	if (actor.Play(0,START, 0.0, FALSE,TRUE) == FALSE){
 		sprintf(debug, "%s play action failed\n", debug);
 	}
-	
-	robber = scene.LoadActor("Robber02");
-	if (robber == FAILED_ID){
-		sprintf(debug, "%s Robber02 load fail\n", debug);
-		return FALSE;
+
+	ifstream fin;
+	fin.open("Data\\npcPos.txt");
+	if (!fin.is_open()) {
+		sprintf(debug, "%s open file error\n", debug);
+		sprintf(debug, "%s %s\n", debug, strerror(errno));
 	}
-	FnActor actor_robber;
-	actor_robber.Object(robber);
-	float pos_robber[3];
-	pos_robber[0] = 3569.0;
-	pos_robber[1] = -3010;
+    float pos_robber[3];
 	pos_robber[2] = 100;
-	actor_robber.SetPosition(pos_robber);
+	int i = 0;
+	FnActor actor_robbers[100];
+    while (fin >> pos_robber[0] && fin >> pos_robber[1]) {
+		sprintf(debug, "%s in the loading npc while loop\n", debug);
+		robbers[i] = scene.LoadActor("Robber02");
+		if (robbers[i] == FAILED_ID){
+			sprintf(debug, "%s Robber02 load fail\n", debug);
+			return FALSE;
+		}
 
-	flag = actor_robber.PutOnTerrain(tID,FALSE,0.0);
+		actor_robbers[i].Object(robbers[i]);
+		actor_robbers[i].SetPosition(pos_robber);
+		
+		flag = actor_robbers[i].PutOnTerrain(tID,FALSE,0.0);
 
-	if (flag == FALSE){
-		return FALSE;
-	}
-	// set donzo idle action
-	ACTIONid idleID_robber = actor_robber.GetBodyAction(NULL,"CombatIdle");
+		if (flag == FALSE){
+			return FALSE;
+		}
+		ACTIONid idleID_robber = actor_robbers[i].GetBodyAction(NULL,"CombatIdle");
 	
-	//actor.MakeCurrentAction(0,NULL,idleID,0.0,TRUE);
-	//if (actor.MakeCurrentAction(0,NULL,FAILED_ID) == FAILED_ID){
-	if (actor_robber.MakeCurrentAction(0,NULL,idleID_robber) == FAILED_ID){
-		sprintf(debug, "%s make current fail\n", debug);
-	}else{
-		sprintf(debug, "%s make action success\n", debug);
-	}
-	
-	if (actor_robber.Play(0,START, 0.0, FALSE,TRUE) == FALSE){
-		sprintf(debug, "%s play action failed\n", debug);
-	}
-
+		//actor.MakeCurrentAction(0,NULL,idleID,0.0,TRUE);
+		//if (actor.MakeCurrentAction(0,NULL,FAILED_ID) == FAILED_ID){
+		if (actor_robbers[i].MakeCurrentAction(0,NULL,idleID_robber) == FAILED_ID){
+			sprintf(debug, "%s make current fail\n", debug);
+		}else{
+			sprintf(debug, "%s make action success\n", debug);
+		}
+		
+		if (actor_robbers[i].Play(0,START, 0.0, FALSE,TRUE) == FALSE){
+			sprintf(debug, "%s play action failed\n", debug);
+		}
+		i++;
+    }
+	robbers_count = i;
 
 	npc = new AIControl(lyubu);
 	npc->AddNPC(donzo,"Data\\DozonAction.txt");
-	npc->AddNPC(robber,"Data\\Robber02Action.txt");
+
+	for (i = 0; i < robbers_count; i++) {
+		npc->AddNPC(robbers[i],"Data\\Robber02Action.txt");
+	}
 	return TRUE;
 }
 
@@ -349,7 +367,10 @@ void Reset(WORLDid gID, BYTE code, BOOL value){
 			scene.Object(sID);
 			scene.DeleteActor(lyubu);
 			scene.DeleteActor(donzo);
-			scene.DeleteActor(robber);
+			int i;
+			for (i = 0; i < robbers_count; i++) {
+				scene.DeleteActor(robbers[i]);
+			}
 			debug[0] = '\0';
 			ActorStateMachine * lyubuState = kc->mainChar;
 			delete lyubuState;

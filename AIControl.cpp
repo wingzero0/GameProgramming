@@ -1,5 +1,9 @@
 #include "AIControl.h"
 #include "ActorStateMachine.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
 using namespace std;
 extern char debug[1024];
 
@@ -47,13 +51,19 @@ void AIControl::moveTowardLyubu() {
 		float distance;
 		distance = sqrt((npcPos[0] - lyubuPos[0]) * (npcPos[0] - lyubuPos[0]) 
 			+ (npcPos[1] - lyubuPos[1])	* (npcPos[1] - lyubuPos[1]));
-			//+ (npcPos[0] - lyubuPos[0]) * (npcPos[0] - lyubuPos[0]));
+			//+ (npcPos[2] - lyubuPos[2]) * (npcPos[2] - lyubuPos[2]));
 		
-		//sprintf(debug, "%s distance = %f\n",debug,distance);
+		//sprintf(debug, "%s x = %f y = %f z = %f\n",debug, lyubuPos[0], lyubuPos[1], lyubuPos[2]);
 
 		if (distance > ATTACK_DISTANCE && distance < KEEP_TRACK_DISTANCE) {
 			//turn toward lyubu
-			float newFDir[3], normalize;
+			float newFDir[3], normalize, offset;
+			srand ( time(NULL) );
+			offset = rand() % NPC_MOVE_OFFSET + 1;
+			lyubuPos[0] += offset;
+			lyubuPos[1] += offset;
+			lyubuPos[2] += offset;
+
 			newFDir[0] = lyubuPos[0] - npcPos[0];
 			newFDir[1] = lyubuPos[1] - npcPos[1];
 			newFDir[2] = lyubuPos[2] - npcPos[2];
@@ -79,6 +89,21 @@ void AIControl::moveTowardLyubu() {
 			npcStateMachineList[i]->ChangeState(STATERUN, FALSE);
 		}
 		else if (distance <= ATTACK_DISTANCE) {
+			//before attack, turn toward lyubu
+			float newFDir[3], normalize, offset;
+
+			newFDir[0] = lyubuPos[0] - npcPos[0];
+			newFDir[1] = lyubuPos[1] - npcPos[1];
+			newFDir[2] = lyubuPos[2] - npcPos[2];
+			normalize = sqrt(newFDir[0] * newFDir[0] + newFDir[1] * newFDir[1] + newFDir[2] * newFDir[2]);
+			newFDir[0] /= normalize;
+			newFDir[1] /= normalize;
+			newFDir[2] /= normalize;
+
+			float npcFDir[3], npcUDir[3];
+			npc.GetWorldDirection(npcFDir, npcUDir);
+			npc.SetWorldDirection(newFDir, npcUDir);
+
 			//sprintf(debug, "%s distance = %f\n",debug,distance);
 			npcStateMachineList[i]->AppendAttackCode(NORMAL_ATT);
 		}
