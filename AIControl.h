@@ -5,8 +5,8 @@
 
 #define MOVE_DISTANCE 5
 #define KEEP_TRACK_DISTANCE 1500
-#define ATTACK_DISTANCE 50
-
+#define ATTACK_DISTANCE 100
+#define NPC_MOVE_OFFSET 100
 
 //class AIControl :
 	//public GameControl
