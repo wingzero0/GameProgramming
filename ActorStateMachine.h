@@ -9,7 +9,7 @@
 #define STATERUN 3	
 #define STATECOMBATIDEL 4
 #define STATEDIE 5
-
+#define STATEGUARD 6
 typedef int ActorState;
 
 #define MAXATTACK 4
@@ -54,6 +54,7 @@ public:
 	//int ChangeStateAndAction();
 	int ChangeState(ActorState s, BOOL forceCheck = FALSE);
 	BOOL CharacterSetIdle();
+	BOOL CharacterSetGuard();
 	BOOL CanBeControl();
 	BOOL CanWalk();
 	BOOL CanAttack();

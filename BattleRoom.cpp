@@ -93,7 +93,6 @@ void BattleRoom::PerformAttack(){
 					sprintf(debug, "%s new victim\n",debug);
 					if ( this->AreanList[i]->state != STATEDIE){
 						this->AreanList[i]->TakeDamage(attackPower, beOutShot, pPos);
-						//this->AreanList[i]->ChangeState(STATEDAMAGE,TRUE);
 					}
 					this->playerHitMap[tmpid] = TRUE;
 				}

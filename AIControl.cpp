@@ -108,7 +108,7 @@ void AIControl::moveTowardLyubu() {
 			npcStateMachineList[i]->AppendAttackCode(NORMAL_ATT);
 		}
 		else {
-			npcStateMachineList[i]->ChangeState(STATEIDLE);
+			npcStateMachineList[i]->CharacterSetIdle();
 		}
 	}
 }

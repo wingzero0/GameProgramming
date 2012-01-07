@@ -35,7 +35,7 @@ KeyboardControl *kc;
 AIControl *npc;
 BattleRoom *bRoom;
 LyubuStateMachine * lyubuState;
-
+AUDIOid audioBG;
 eF3DFX *fx00 = NULL;
 
 char debug[1024] = "\0";
@@ -146,7 +146,7 @@ void CharacterInit(){
 	initLyubu();
 	initNPC();
 	initBattleRoom(kc, npc);
-	//initFX();
+	initFX();
 }
 
 BOOL initLyubu(){ // init Lyubu and Camera
@@ -357,6 +357,22 @@ BOOL initFX(){
 		fx = fx00->GetFX(i);
 		fx->InitPosition(pos);
 	}
+	/*
+	FyBeginMedia("Data\\Media", 1);
+	HWND hwnd = FyGetWindowHandle(gw.Object());
+	MEDIAid mmID = FyCreateMediaPlayer(0, "battle", 0, 0, 0, 0);
+	FnMedia mP;
+	mP.Object(mmID);
+	mP.Play(ONCE);
+	*/
+	
+	gw.SetAudioPath("Data\\Audio");
+	audioBG = gw.CreateAudio();
+	FnAudio audio;
+	audio.Object(audioBG);
+	BOOL beA = audio.Load("dmc4");
+	audio.Play(ONCE);
+
 	return TRUE;
 }
 

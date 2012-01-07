@@ -95,13 +95,7 @@ BOOL ActorStateMachine::CanAttack(){
 }
 
 BOOL ActorStateMachine::CanBeControl(){
-	/*
-	if (this->state == STATEATTACK || this->state == STATEBEATTACK){
-		return FALSE;
-	}else{
-		return TRUE;
-	}*/
-	if (this->state == STATEIDLE || this->state == STATERUN){
+	if (this->state == STATEIDLE || this->state == STATERUN || this->state == STATEGUARD){
 		return TRUE;
 	}else {
 		return FALSE;
@@ -115,7 +109,7 @@ int ActorStateMachine::ChangeState(ActorState s, BOOL forceSet){
 		this->state = s;
 	}
 
-	if (s == STATEIDLE || s == STATERUN || s == STATEDAMAGE || s == STATEDIE){
+	if (s == STATEIDLE || s == STATERUN || s == STATEDAMAGE || s == STATEDIE ||s == STATEGUARD){
 		if (s == STATEIDLE){
 			this->SetNewAction("CombatIdle");
 		}else if (s == STATERUN){
@@ -130,12 +124,23 @@ int ActorStateMachine::ChangeState(ActorState s, BOOL forceSet){
 			this->SetNewAction("HeavyDamage");
 		}else if (s == STATEDIE){
 			this->SetNewAction("Die");
+		}else if (s == STATEGUARD){
+			this->SetNewAction("Guard");
 		}
 	}else if (s == STATEATTACK){
 		// Serial attack start;
 		this->startAttack = TRUE;
 	}
 	return 0;
+}
+
+BOOL ActorStateMachine::CharacterSetGuard(){
+	if (this->CanBeControl() == TRUE){
+		this->ChangeState(STATEGUARD);
+		return TRUE;
+	}else{
+		return FALSE;
+	}
 }
 
 BOOL ActorStateMachine::CharacterSetIdle(){

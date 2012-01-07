@@ -65,6 +65,8 @@ int KeyboardControl::Command(){//the return value doesn't represent anything.
 	if (FyCheckHotKeyStatus(FY_W) || FyCheckHotKeyStatus(FY_A) 
 		|| FyCheckHotKeyStatus(FY_S) || FyCheckHotKeyStatus(FY_D)){
 		this->DirControl();
+	}else if (FyCheckHotKeyStatus(FY_SPACE)){
+		this->mainChar->CharacterSetGuard();
 	}else{
 		//this->CharacterSetIdle();
 		this->mainChar->CharacterSetIdle();
