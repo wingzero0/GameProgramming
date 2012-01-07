@@ -8,10 +8,14 @@
 class AIControl
 {
 public:
+	AIControl(int);
 	std::vector<ActorStateMachine *> npcStateMachineList;
 	AIControl(void);
 	virtual ~AIControl(void);
 	int AddNPC(ACTORid ncp, char * ActionFilename);
 	void PlayAction(int skip);
+	float distanceBetweenLyubu();
+private:
+	int lyubuId;
 };
 
