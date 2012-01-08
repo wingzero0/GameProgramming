@@ -15,6 +15,7 @@ class AIControl
 public:
 	AIControl(ACTORid id);
 	std::vector<ActorStateMachine *> npcStateMachineList;
+	ActorStateMachine * bossStateMachine;
 	AIControl(void);
 	virtual ~AIControl(void);
 	int AddNPC(ACTORid ncp, char * ActionFilename);
@@ -23,7 +24,7 @@ public:
 	void moveTowardLyubu();
 private:
 	ACTORid lyubuId;
-	ACTORid boss;
+	//ACTORid boss;
 	std::vector<ActorStateMachine *> npcDropList;
 };
 

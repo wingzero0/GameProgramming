@@ -23,7 +23,7 @@ typedef int ATTACK_CODE;
 
 #define OUTSHOT_DIS 200.0
 #define SMALL_OUTSHOT_DIS 25.0
-#define MAX_LIFE 1000.0
+#define MAX_LIFE 100.0
 #define ROBOT_ATTACKRANGE 18000.0
 
 #define STUCK_SHOT 0

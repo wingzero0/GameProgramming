@@ -30,7 +30,8 @@ int AIControl::AddNPC(ACTORid npc, char * ActionFilename){
 int AIControl::AddBossNPC(ACTORid npc, char * ActionFilename){
 	ActorStateMachine* stm = new ActorStateMachine(npc, ActionFilename);
 	this->npcStateMachineList.push_back(stm);
-	stm->life = 1000;
+	this->bossStateMachine = stm;
+	this->bossStateMachine->life = 100;
 	return 0;
 }
 
