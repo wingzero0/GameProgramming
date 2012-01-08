@@ -1,5 +1,6 @@
 #pragma once
 #include "TheFlyWin32.h"
+#include "FyFx.h"
 #include <map>
 #include <string>
 
@@ -10,6 +11,7 @@
 #define STATECOMBATIDEL 4
 #define STATEDIE 5
 #define STATEGUARD 6
+#define STATEVANISH 7
 typedef int ActorState;
 
 #define MAXATTACK 4
@@ -20,7 +22,7 @@ typedef int ActorState;
 typedef int ATTACK_CODE;
 
 #define OUTSHOT_DIS 200.0
-#define SMALL_OUTSHOT_DIS 50.0
+#define SMALL_OUTSHOT_DIS 25.0
 #define MAX_LIFE 1000.0
 #define ROBOT_ATTACKRANGE 18000.0
 
@@ -40,13 +42,13 @@ public:
 	int attackKeyQueue[MAXATTACK];
 	BOOL newAttack;
 	BOOL effectiveAttack;
+	int life;
 protected:
 	int currentAttackIndex;
 	int lastAttackIndex;
 	BOOL attackDisable;
 	BOOL startAttack;
 	float lastAttackFrame;
-	int life;
 	BOOL initActionIDMap(char *ActionFilename);
 	std::map<std::string, ACTIONid> ActionIDMap;
 	virtual BOOL PlayAttackAction(int skip);
@@ -54,6 +56,7 @@ protected:
 	virtual BOOL UpdateEffectiveAttack();
 	OBJECTid bloodID;
 	virtual BOOL initLife();
+	eF3DFX *fxDie;
 public:
 	ActorStateMachine(void);
 	virtual ~ActorStateMachine(void);

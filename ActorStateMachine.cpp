@@ -2,7 +2,7 @@
 
 extern char debug[1024];
 extern SCENEid sID;
-//extern WORLDid gID;
+extern WORLDid gID;
 extern AUDIOid audioG;
 extern AUDIOid audioD;
 using namespace std;
@@ -158,6 +158,26 @@ int ActorStateMachine::ChangeState(ActorState s, BOOL forceSet){
 	}else if (s == STATEATTACK){
 		// Serial attack start;
 		this->startAttack = TRUE;
+	}else if (s == STATEVANISH){
+		FnWorld gw;
+		gw.Object(gID);
+		gw.SetTexturePath("Data\\FXs\\Textures");
+		gw.SetObjectPath("Data\\FXs\\Models");
+
+		float pos[3];
+		FnActor actor;
+		actor.Object(this->character);
+		actor.GetWorldPosition(pos);
+
+		fxDie = new eF3DFX(sID);
+		fxDie->SetWorkPath("Data\\FXs");
+		BOOL beOK = fxDie->Load("dust3");
+		eF3DBaseFX *fx;
+		int i, numFX = fxDie->NumberFXs();
+		for (i = 0; i < numFX; i++) {
+			fx = fxDie->GetFX(i);
+			fx->InitPosition(pos);
+		}
 	}
 	return 0;
 }
@@ -213,15 +233,29 @@ BOOL ActorStateMachine::PlayAction(int skip){
 	}else if (this->state == STATEDAMAGE){
 		BOOL ret = actor.Play(0,ONCE, (float)skip, TRUE,TRUE);
 		if (ret == FALSE){
-			sprintf(debug, "%s damage end\n",debug);
+			//sprintf(debug, "%s damage end\n",debug);
 			this->ChangeState(STATEIDLE);
 		}
 	}else if (this->state == STATEDIE){
 		BOOL ret = actor.Play(0,ONCE, (float)skip, TRUE,TRUE);
-		/*
+		
 		if (ret == FALSE){
 			sprintf(debug, "%s character die\n",debug);
-		}*/
+			this->ChangeState(STATEVANISH);
+		}
+	}else if (this->state == STATEVANISH){
+		if (this->fxDie != NULL) {
+			BOOL beOK = this->fxDie->Play((float) skip);
+			if (!beOK) {
+				//fxDie->Reset();  // make it from the starting position and play it again
+				// should delete the character
+				delete fxDie;
+				this->fxDie = NULL;
+				FnScene scene;
+				scene.Object(sID);
+				scene.DeleteActor(this->character);
+			}
+		}
 	}
 	return TRUE;
 }

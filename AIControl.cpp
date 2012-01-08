@@ -23,16 +23,27 @@ AIControl::~AIControl(void)
 int AIControl::AddNPC(ACTORid npc, char * ActionFilename){
 	ActorStateMachine* stm = new ActorStateMachine(npc, ActionFilename);
 	this->npcStateMachineList.push_back(stm);
+	stm->life = 10;
+	return 0;
+}
+
+int AIControl::AddBossNPC(ACTORid npc, char * ActionFilename){
+	ActorStateMachine* stm = new ActorStateMachine(npc, ActionFilename);
+	this->npcStateMachineList.push_back(stm);
+	stm->life = 1000;
 	return 0;
 }
 
 void AIControl::PlayAction(int skip){
-	for (int i = 0;i< this->npcStateMachineList.size(); i++){
+	for (unsigned int i = 0;i< this->npcStateMachineList.size(); i++){
 		npcStateMachineList[i]->PlayAction(skip);
 	}
 }
 void AIControl::moveTowardLyubu() {
 	for (int i = 0;i< this->npcStateMachineList.size(); i++){
+		if (this->npcStateMachineList[i]->state == STATEDIE){
+		
+		}
 		if (npcStateMachineList[i]->CanBeControl() == FALSE){
 			continue;
 		}

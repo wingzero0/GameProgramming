@@ -18,9 +18,12 @@ public:
 	AIControl(void);
 	virtual ~AIControl(void);
 	int AddNPC(ACTORid ncp, char * ActionFilename);
+	int AddBossNPC(ACTORid ncp, char * ActionFilename);
 	void PlayAction(int skip);
 	void moveTowardLyubu();
 private:
 	ACTORid lyubuId;
+	ACTORid boss;
+	std::vector<ActorStateMachine *> npcDropList;
 };
 

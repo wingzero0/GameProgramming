@@ -45,7 +45,7 @@ char loopBuff[1024] = "\0";
 void debug_message(char*, char*);
 
 void QuitGame(WORLDid, BYTE, BOOL);
-void CleanDebugBuff(WORLDid, BYTE, BOOL);
+void FunctionKey(WORLDid, BYTE, BOOL);
 BOOL initLyubu();
 BOOL initNPC();
 BOOL initBattleRoom(GameControl *player, AIControl *npc);
@@ -319,7 +319,7 @@ BOOL initNPC(){
 	robbers_count = i;
 
 	npc = new AIControl(lyubu);
-	npc->AddNPC(donzo,"Data\\DozonAction.txt");
+	npc->AddBossNPC(donzo,"Data\\DozonAction.txt");
 
 	for (i = 0; i < robbers_count; i++) {
 		npc->AddNPC(robbers[i],"Data\\Robber02Action.txt");
@@ -338,9 +338,10 @@ BOOL initFX(){
 	gw.SetTexturePath("Data\\FXs\\Textures");
 	gw.SetObjectPath("Data\\FXs\\Models");
 
+	/*
 	fx00 = new eF3DFX(sID);
 	fx00->SetWorkPath("Data\\FXs");
-	BOOL beOK = fx00->Load("NoPigeon");
+	BOOL beOK = fx00->Load("Smoke_01");
 
 	if (beOK == FALSE){
 		sprintf(debug, "%s fx load failed\n", debug);
@@ -351,14 +352,14 @@ BOOL initFX(){
 	float pos[3];
 	pos[0] = 3569.0;
 	pos[1] = -3210.0;
-	pos[2] = 0.0;
+	pos[2] = 10.0;
 
 	eF3DBaseFX *fx;
 	int i, numFX = fx00->NumberFXs();
 	for (i = 0; i < numFX; i++) {
 		fx = fx00->GetFX(i);
 		fx->InitPosition(pos);
-	}
+	}*/
 	/*
 	FyBeginMedia("Data\\Media", 1);
 	HWND hwnd = FyGetWindowHandle(gw.Object());
@@ -478,7 +479,8 @@ void GetPosDetail(char *buffer){
 BOOL BlindKeys(){
 	FyDefineHotKey(FY_ESCAPE, QuitGame, FALSE);
 	FyDefineHotKey(FY_F1, Reset, FALSE);
-	FyDefineHotKey(FY_F2, CleanDebugBuff, FALSE);
+	FyDefineHotKey(FY_F2, FunctionKey, FALSE);
+	FyDefineHotKey(FY_F3, FunctionKey, FALSE);
 
 	// define some mouse functions
 	FyBindMouseFunction(LEFT_MOUSE, InitPivot, PivotCam, NULL, NULL);
@@ -492,8 +494,16 @@ BOOL BlindKeys(){
 	return TRUE;
 }
 
-void CleanDebugBuff(WORLDid gID, BYTE code, BOOL value){
-	debug[0] = '\0';
+void FunctionKey(WORLDid gID, BYTE code, BOOL value){
+	if (code == FY_F2 && FyCheckHotKeyStatus(FY_F2) == TRUE){
+		debug[0] = '\0';
+	}else if (code == FY_F3 && FyCheckHotKeyStatus(FY_F3) == TRUE){
+		if (bRoom->hurt == FALSE){
+			bRoom->hurt = TRUE;
+		}else{
+			bRoom->hurt = FALSE;
+		}
+	}
 }
 //------------------------------------------------------------------------------------
 // timer callback function which will be invoked by TheFly3D System every 1/30 second
