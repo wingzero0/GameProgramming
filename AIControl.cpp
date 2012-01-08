@@ -67,14 +67,16 @@ void AIControl::moveTowardLyubu() {
 		
 		//sprintf(debug, "%s x = %f y = %f z = %f\n",debug, lyubuPos[0], lyubuPos[1], lyubuPos[2]);
 
-		if (distance > ATTACK_DISTANCE && distance < KEEP_TRACK_DISTANCE) {
+		if (distance > ATTACK_DISTANCE && ((npcStateMachineList[i] == this->bossStateMachine && distance < BOSS_KEEP_TRACK_DISTANCE) || distance < KEEP_TRACK_DISTANCE)) {
 			//turn toward lyubu
 			float newFDir[3], normalize, offset;
-			srand ( time(NULL) );
-			offset = rand() % NPC_MOVE_OFFSET + 1;
-			lyubuPos[0] += offset;
-			lyubuPos[1] += offset;
-			lyubuPos[2] += offset;
+			if (npcStateMachineList[i] != this->bossStateMachine) {
+				srand ( time(NULL) + i);
+				offset = rand() % NPC_MOVE_OFFSET + 1;
+				lyubuPos[0] += offset;
+				lyubuPos[1] += offset;
+				lyubuPos[2] += offset;
+			}
 
 			newFDir[0] = lyubuPos[0] - npcPos[0];
 			newFDir[1] = lyubuPos[1] - npcPos[1];
@@ -117,7 +119,14 @@ void AIControl::moveTowardLyubu() {
 			npc.SetWorldDirection(newFDir, npcUDir);
 
 			//sprintf(debug, "%s distance = %f\n",debug,distance);
-			npcStateMachineList[i]->AppendAttackCode(NORMAL_ATT);
+			srand ( time(NULL) + i);
+			float rate = rand() % 100;
+			if (rate > GUARD_RATE) {
+				npcStateMachineList[i]->AppendAttackCode(NORMAL_ATT);
+			}
+			else {
+				npcStateMachineList[i]->CharacterSetGuard();
+			}
 		}
 		else {
 			npcStateMachineList[i]->CharacterSetIdle();

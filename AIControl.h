@@ -4,9 +4,12 @@
 #include <vector>
 
 #define MOVE_DISTANCE 5
-#define KEEP_TRACK_DISTANCE 1500
+#define KEEP_TRACK_DISTANCE 800
+#define BOSS_KEEP_TRACK_DISTANCE 2000
 #define ATTACK_DISTANCE 100
-#define NPC_MOVE_OFFSET 100
+#define NPC_MOVE_OFFSET 150
+#define GUARD_RATE 40
+
 
 //class AIControl :
 	//public GameControl
