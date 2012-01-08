@@ -249,8 +249,8 @@ BOOL initNPC(){
 	FnActor actor;
 	actor.Object(donzo);
 	float pos[3];
-	pos[0] = 3569.0;
-	pos[1] = -3010;
+	pos[0] = -909;
+	pos[1] = -2300;
 	pos[2] = 100;
 	actor.SetPosition(pos);
 
@@ -291,6 +291,9 @@ BOOL initNPC(){
 		if (robbers[i] == FAILED_ID){
 			sprintf(debug, "%s Robber02 load fail\n", debug);
 			return FALSE;
+		}
+		else {
+			sprintf(debug, "%s Robber02 load success\n", debug);
 		}
 
 		actor_robbers[i].Object(robbers[i]);
