@@ -7,7 +7,7 @@
 using namespace std;
 extern char debug[1024];
 
-AIControl::AIControl(int id)
+AIControl::AIControl(ACTORid id)
 {
 	this->lyubuId = id;
 }
@@ -15,7 +15,7 @@ AIControl::AIControl(int id)
 
 AIControl::~AIControl(void)
 {
-	for (int i = 0;i< this->npcStateMachineList.size(); i++){
+	for (unsigned int i = 0;i< this->npcStateMachineList.size(); i++){
 		delete this->npcStateMachineList[i];
 	}
 }

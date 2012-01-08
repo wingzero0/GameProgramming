@@ -19,7 +19,8 @@ typedef int ActorState;
 #define ULTIMATE_ATT 2
 typedef int ATTACK_CODE;
 
-#define OUTSHOT_DIS 100.0
+#define OUTSHOT_DIS 200.0
+#define SMALL_OUTSHOT_DIS 50.0
 #define MAX_LIFE 1000.0
 #define ROBOT_ATTACKRANGE 18000.0
 
@@ -44,8 +45,7 @@ protected:
 	int lastAttackIndex;
 	BOOL attackDisable;
 	BOOL startAttack;
-	//AUDIOid audioG;//guard
-	//AUDIOid audioD;//damage
+	float lastAttackFrame;
 	int life;
 	BOOL initActionIDMap(char *ActionFilename);
 	std::map<std::string, ACTIONid> ActionIDMap;
@@ -69,7 +69,7 @@ public:
 	BOOL AppendAttackCode(ATTACK_CODE code);
 	virtual BOOL PlayAction(int skip);
 	BOOL CheckEffectiveAttack();
-	virtual int AttackEnemy(float enemyPos[3], BOOL *beOutShot = NULL); // beOutShot will be assgin a value after the call
-	virtual void TakeDamage(float damage, BOOL beShot, float* attackerPos);
+	virtual int AttackEnemy(float enemyPos[3], SHOT_CODE *shot_code = NULL); // shot_code will be assgin a value after the call
+	virtual void TakeDamage(int damage, SHOT_CODE shot_code, float* attackerPos);
 };
 

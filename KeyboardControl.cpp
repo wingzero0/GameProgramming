@@ -37,7 +37,7 @@ int KeyboardControl::DirControl(){
 		key = MOVE_RIGHT;
 	}
 
-	float theta = this->GenerateTargetDir(key);
+	this->GenerateTargetDir(key);
 	
 	if (this->isOnTargetDir()){
 		//sprintf(debug ,"in move\n");

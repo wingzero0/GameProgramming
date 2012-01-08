@@ -29,7 +29,7 @@ void BattleRoom::RefreshArena(){
 	actor.GetWorldPosition(playerPos);
 
 	this->AreanList.clear();
-	for (int i =0;i< this->npcStateMachineList.size();i++){
+	for (unsigned int i =0;i< this->npcStateMachineList.size();i++){
 		npc.Object(this->npcStateMachineList[i]->character);
 		npc.GetWorldPosition(npcPos);
 		//this->npcStateMachineList[i]->AppendAttackCode(NORMAL_ATT);
@@ -82,7 +82,7 @@ void BattleRoom::PerformAttack(){
 		actor.GetWorldPosition(pPos);
 
 		int beOutShot; 
-		for (int i= 0;i< this->AreanList.size();i++){
+		for (unsigned int i= 0;i< this->AreanList.size();i++){
 			ACTORid tmpid = AreanList[i]->character;
 			if (playerHitMap.find(tmpid) == playerHitMap.end()){
 				npc.Object(tmpid);
@@ -90,7 +90,7 @@ void BattleRoom::PerformAttack(){
 				int attackPower = this->playerStateMachine->AttackEnemy(nPos, &beOutShot);
 				if (attackPower > 0 ){
 					// get a new victim;
-					sprintf(debug, "%s new victim\n",debug);
+					//sprintf(debug, "%s new victim\n",debug);
 					if ( this->AreanList[i]->state != STATEDIE){
 						this->AreanList[i]->TakeDamage(attackPower, beOutShot, pPos);
 					}
@@ -113,13 +113,13 @@ void BattleRoom::PerformAttack(){
 			if (npcHitMap.find(tmpid) == npcHitMap.end()){ // find nothing
 				npc.Object(tmpid);
 				npc.GetWorldPosition(nPos);
-				BOOL beOutShot;
+				int beOutShot;
 
 				int attackPower = this->AreanList[i]->AttackEnemy(pPos, &beOutShot);
 				if (attackPower > 0 ){
-					sprintf(debug, "%s player damage\n",debug);
+					//sprintf(debug, "%s player damage\n",debug);
 					if ( this->playerStateMachine->state != STATEDIE){
-						this->playerStateMachine->TakeDamage(attackPower, beOutShot, pPos);
+						this->playerStateMachine->TakeDamage(attackPower, beOutShot, nPos);
 					}
 					npcHitMap[tmpid] = TRUE;
 				}

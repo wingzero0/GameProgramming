@@ -13,7 +13,7 @@
 class AIControl
 {
 public:
-	AIControl(int);
+	AIControl(ACTORid id);
 	std::vector<ActorStateMachine *> npcStateMachineList;
 	AIControl(void);
 	virtual ~AIControl(void);
@@ -21,6 +21,6 @@ public:
 	void PlayAction(int skip);
 	void moveTowardLyubu();
 private:
-	int lyubuId;
+	ACTORid lyubuId;
 };
 
