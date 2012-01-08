@@ -23,6 +23,11 @@ typedef int ATTACK_CODE;
 #define MAX_LIFE 1000.0
 #define ROBOT_ATTACKRANGE 18000.0
 
+#define STUCK_SHOT 0
+#define SMALL_SHOT 1
+#define BIG_SHOT 2
+typedef int SHOT_CODE;
+
 // actor free meaning it can do anything by the controller.
 // actor stay meaning that it can't be move beacuse of being attacked.
 
@@ -39,6 +44,8 @@ protected:
 	int lastAttackIndex;
 	BOOL attackDisable;
 	BOOL startAttack;
+	//AUDIOid audioG;//guard
+	//AUDIOid audioD;//damage
 	int life;
 	BOOL initActionIDMap(char *ActionFilename);
 	std::map<std::string, ACTIONid> ActionIDMap;

@@ -36,6 +36,8 @@ AIControl *npc;
 BattleRoom *bRoom;
 LyubuStateMachine * lyubuState;
 AUDIOid audioBG;
+AUDIOid audioG;//guard
+AUDIOid audioD;//damage
 eF3DFX *fx00 = NULL;
 
 char debug[1024] = "\0";
@@ -370,9 +372,22 @@ BOOL initFX(){
 	audioBG = gw.CreateAudio();
 	FnAudio audio;
 	audio.Object(audioBG);
-	BOOL beA = audio.Load("dmc4");
-	audio.Play(ONCE);
+	BOOL beA = audio.Load("battle");
+	audio.Play(LOOP);
 
+	audioD = gw.CreateAudio();
+	audio.Object(audioD);
+	beA = audio.Load("damage");
+	if (beA == FALSE){
+		sprintf(debug, "%s damage load failed\n", debug);
+	}
+
+	audioG = gw.CreateAudio();
+	audio.Object(audioG);
+	beA = audio.Load("guard");
+	if (beA == FALSE){
+		sprintf(debug, "%s guard load failed\n", debug);
+	}
 	return TRUE;
 }
 
@@ -387,6 +402,11 @@ void Reset(WORLDid gID, BYTE code, BOOL value){
 			for (i = 0; i < robbers_count; i++) {
 				scene.DeleteActor(robbers[i]);
 			}
+			FnWorld gw;
+			gw.Object(gID);
+			gw.DeleteAudio(audioG);
+			gw.DeleteAudio(audioD);
+			gw.DeleteAudio(audioBG);
 			debug[0] = '\0';
 			ActorStateMachine * lyubuState = kc->mainChar;
 			delete lyubuState;

@@ -2,6 +2,9 @@
 
 extern char debug[1024];
 extern SCENEid sID;
+//extern WORLDid gID;
+extern AUDIOid audioG;
+extern AUDIOid audioD;
 using namespace std;
 #define MOVE_LENGTH 20.0
 
@@ -15,6 +18,12 @@ ActorStateMachine::~ActorStateMachine(void)
 	FnScene scene;
 	scene.Object(sID);
 	scene.DeleteObject(this->bloodID);
+	/*
+	FnWorld gw;
+	gw.Object(gID);
+	gw.DeleteAudio(audioG);
+	gw.DeleteAudio(audioD);
+	*/
 }
 
 ActorStateMachine::ActorStateMachine(ACTORid character, char * ActionFilename){
@@ -27,6 +36,25 @@ ActorStateMachine::ActorStateMachine(ACTORid character, char * ActionFilename){
 	this->effectiveAttack = FALSE;
 	this->initActionIDMap(ActionFilename);
 	this->initLife();
+	/*
+	FnWorld gw;
+	gw.Object(gID);
+	gw.SetAudioPath("Data\\Audio");
+	audioG = gw.CreateAudio();
+	FnAudio audio;
+	audio.Object(audioG);
+	BOOL beA = audio.Load("guard");   // au_bullet.hit1.wav
+	if (beA == FALSE){
+		sprintf(debug, "%s guard load failed\n", debug);
+	}
+
+	audioD = gw.CreateAudio();
+	audio.Object(audioD);
+	beA = audio.Load("damage");   // au_bullet.hit1.wav
+	if (beA == FALSE){
+		sprintf(debug, "%s damage load failed\n", debug);
+	}
+	*/
 }
 
 BOOL ActorStateMachine::initLife(){
@@ -360,6 +388,16 @@ int ActorStateMachine::AttackEnemy(float enemyPos[3], BOOL *beOutShot){
 }
 
 void ActorStateMachine::TakeDamage(float damage, BOOL beShot, float *attackerPos ){
+	if (this->state == STATEGUARD){
+		FnAudio audio;
+		audio.Object(audioG);
+		audio.Play(ONCE);
+		return;
+	}else{
+		FnAudio audio;
+		audio.Object(audioD);
+		audio.Play(ONCE);
+	}
 	FnActor actor;
 	actor.Object(character);
 	float pos[3];
@@ -372,9 +410,7 @@ void ActorStateMachine::TakeDamage(float damage, BOOL beShot, float *attackerPos
 		newDir[1] = attackerPos[1] - pos[1];
 		newDir[2] = 0.0f;
 		actor.SetWorldDirection(newDir,NULL);
-		//if (beShot == TRUE){
-			actor.MoveForward(-OUTSHOT_DIS,TRUE, FALSE, 0.0, TRUE);
-		//}
+		actor.MoveForward(-OUTSHOT_DIS,TRUE, FALSE, 0.0, TRUE);
 		actor.SetWorldDirection(dir,NULL);
 	}
 	this->life -= damage;
